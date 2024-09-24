@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基于IP的真实地址生成器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="fade-in">基于IP的真实地址生成器 🌍</h1>
+        <p class="fade-in">您的当前IP地址为: <span id="ip"></span></p>
+        <table class="address-table fade-in">
+            <tr>
+                <th>地址</th>
+                <th>城市</th>
+                <th>州</th>
+                <th>邮编</th>
+                <th>国家</th>
+            </tr>
+            <tr>
+                <td id="street">
+                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                </td>
+                <td id="city">
+                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                </td>
+                <td id="state">
+                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                </td>
+                <td id="postcode">
+                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                </td>
+                <td id="country">
+                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                </td>
+            </tr>
+        </table>
+        <button onclick="generateAddress()" class="fade-in">生成新地址</button>
+        <iframe id="map" class="fade-in" frameborder="0"></iframe>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
