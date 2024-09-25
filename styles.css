@@ -54,39 +54,28 @@ p {
 
 .input-button-container {
   display: flex;
-  margin-bottom: 30px;
+  margin-block-end: 30px;
   border: 1px solid #ddd;
   border-radius: var(--border-radius-small);
   overflow: hidden;
 }
 
 .input-button-container #ip-input {
-  flex-grow: 1;
+  flex: 1;
   padding: 12px 15px;
-  font-size: 16px;
+  font-size: 1rem;
   border: none;
   outline: none;
-  box-sizing: border-box;
 }
 
 .input-button-container button {
   padding: 12px 20px;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   background-color: var(--primary-color);
   color: white;
   border: none;
   transition: background-color 0.3s ease;
-  white-space: nowrap;
-}
-
-.input-button-container button:hover {
-  background-color: var(--secondary-color);
-}
-
-button {
-  margin-top: 0;
-  border-radius: 0;
 }
 
 #map {
@@ -134,8 +123,7 @@ button {
 
 .address-table {
   width: 100%;
-  margin-top: 30px;
-  margin-bottom: 20px;
+  margin-block: 30px 20px;
   border-collapse: separate;
   border-spacing: 0;
   background-color: #f0f0f0;
@@ -145,14 +133,14 @@ button {
 .address-table th,
 .address-table td {
   padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+  text-align: start;
+  border-block-end: 1px solid #ddd;
 }
 
 .address-table th {
   background-color: var(--primary-color);
   color: white;
-  width: 15%;
+  inline-size: 15%;
   text-align: center;
 }
 
@@ -160,7 +148,7 @@ button {
   font-weight: bold;
   color: #4a4a4a;
   cursor: pointer;
-  width: 70%;
+  inline-size: 70%;
 }
 
 .address-table tr:first-child th:first-child {
@@ -196,7 +184,7 @@ button {
 
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 140px;
+  inline-size: 140px;
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -204,9 +192,9 @@ button {
   padding: 5px;
   position: absolute;
   z-index: 100;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -70px;
+  inset-block-end: 100%;
+  inset-inline-start: 50%;
+  margin-inline-start: -70px;
   opacity: 0;
   transition: opacity 0.3s, visibility 0.3s;
 }
