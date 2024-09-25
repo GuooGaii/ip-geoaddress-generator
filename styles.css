@@ -86,19 +86,21 @@ button:hover {
 .address-table th,
 .address-table td {
   padding: 10px;
-  text-align: center;
+  text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
 .address-table th {
   background-color: #667eea;
   color: white;
+  width: 15%;
 }
 
 .address-table td {
   font-weight: bold;
   color: #4a4a4a;
   cursor: pointer;
+  width: 70%;
 }
 
 .formatted-address {
