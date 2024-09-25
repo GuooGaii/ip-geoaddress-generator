@@ -23,7 +23,7 @@ async function getRandomAddress(lat, lon) {
 
 function updateMap(address) {
     const mapFrame = document.getElementById('map');
-    const googleMapUrl = `https://www.google.com/maps?q=${encodeURIComponent(address)}&z=13&output=embed`;
+    const googleMapUrl = `https://www.google.com/maps?q=${encodeURIComponent(address)}&z=15&output=embed&t=k`;
     mapFrame.src = googleMapUrl;
 }
 
@@ -101,34 +101,45 @@ function updateTableCell(id, text) {
     content.textContent = text;
     cell.onclick = (event) => copyToClipboard(text, event.currentTarget);
 
-    if (id === 'street') {
-        cell.onmouseenter = showMapPopup;
-        cell.onmouseleave = hideMapPopup;
-    }
+    // 移除这部分代码
+    // if (id === 'street') {
+    //     cell.onmouseenter = showMapPopup;
+    //     cell.onmouseleave = hideMapPopup;
+    // }
 }
 
 function showMapPopup() {
-    clearTimeout(mapPopupTimer);
-    clearTimeout(mapPopupHideTimer);
-    mapPopupTimer = setTimeout(() => {
-        const mapPopup = document.getElementById('map-popup');
-        mapPopup.style.display = 'block';
-    }, 1500);
+    const mapPopup = document.getElementById('map-popup');
+    mapPopup.style.display = 'block';
 }
 
 function hideMapPopup() {
-    clearTimeout(mapPopupTimer);
-    clearTimeout(mapPopupHideTimer);
-    mapPopupHideTimer = setTimeout(() => {
-        const mapPopup = document.getElementById('map-popup');
-        mapPopup.style.display = 'none';
-    }, 500);
+    const mapPopup = document.getElementById('map-popup');
+    mapPopup.style.display = 'none';
 }
 
-// 将这段代码移到文件末尾，并包装在 DOMContentLoaded 事件中
+// 修改这部分代码
 document.addEventListener('DOMContentLoaded', function () {
     generateAddress();
-    const streetElement = document.getElementById('street');
-    streetElement.addEventListener('mouseenter', showMapPopup);
-    streetElement.addEventListener('mouseleave', hideMapPopup);
+
+    // 移除这两行
+    // const streetElement = document.getElementById('street');
+    // streetElement.addEventListener('mouseenter', showMapPopup);
+    // streetElement.addEventListener('mouseleave', hideMapPopup);
+
+    // 添加地图emoji的事件监听器
+    const mapEmoji = document.querySelector('.map-emoji');
+    const mapPopup = document.getElementById('map-popup');
+
+    mapEmoji.addEventListener('mouseenter', showMapPopup);
+    mapEmoji.addEventListener('mouseleave', hideMapPopup);
 });
+
+// 移除这部分代码，因为我们已经在上面添加了事件监听器
+// document.addEventListener('DOMContentLoaded', function () {
+//     const mapEmoji = document.querySelector('.map-emoji');
+//     const mapPopup = document.getElementById('map-popup');
+
+//     mapEmoji.addEventListener('click', showMapPopup);
+//     mapPopup.addEventListener('click', hideMapPopup);
+// });
