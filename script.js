@@ -1,6 +1,6 @@
 const LOCATION_API_URL = 'https://ipapi.co/json/';
 const NOMINATIM_API_URL = 'https://nominatim.openstreetmap.org/reverse';
-const RANDOM_USER_API_URL = 'https://randomuser.me/api/?nat=cn';
+const RANDOM_USER_API_URL = 'https://randomuser.me/api/';
 
 async function getIPAndLocation(customIP) {
     if (customIP) {
@@ -25,14 +25,30 @@ async function getRandomAddress(lat, lon) {
     return data.address;
 }
 
-async function getRandomNameAndPhone() {
-    const response = await fetch(RANDOM_USER_API_URL);
+async function getRandomNameAndPhone(countryCode) {
+    // 将国家代码转换为 RandomUser API 支持的格式
+    const apiNat = convertCountryCodeToNat(countryCode);
+    const response = await fetch(`${RANDOM_USER_API_URL}?nat=${apiNat}`);
     const data = await response.json();
     const user = data.results[0];
     return {
         name: `${user.name.last}${user.name.first}`,
         phone: user.phone
     };
+}
+
+function convertCountryCodeToNat(countryCode) {
+    // 这里添加更多国家代码的映射
+    const countryMapping = {
+        'CN': 'CN',
+        'US': 'US',
+        'GB': 'GB',
+        'FR': 'FR',
+        'DE': 'DE',
+        'AU': 'AU',
+        // 添加更多国家...
+    };
+    return countryMapping[countryCode.toUpperCase()] || 'US'; // 默认使用美国
 }
 
 function updateMap(address) {
@@ -49,7 +65,8 @@ async function generateAddress() {
         document.getElementById('ip').textContent = ip;
 
         const address = await getRandomAddress(locationData.latitude, locationData.longitude);
-        const { name, phone } = await getRandomNameAndPhone();
+        const countryCode = address.country_code || locationData.country_code;
+        const { name, phone } = await getRandomNameAndPhone(countryCode);
 
         updateTableCell('name', name);
         updateTableCell('phone', phone);
