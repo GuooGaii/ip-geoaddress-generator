@@ -106,6 +106,7 @@ button:hover {
   background-color: #667eea;
   color: white;
   width: 15%;
+  text-align: center; /* 添加此行 */
 }
 
 .address-table td {
