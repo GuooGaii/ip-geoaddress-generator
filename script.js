@@ -1,10 +1,16 @@
 const LOCATION_API_URL = 'https://ipapi.co/json/';
 const NOMINATIM_API_URL = 'https://nominatim.openstreetmap.org/reverse';
 
-async function getIPAndLocation() {
-    const response = await fetch(LOCATION_API_URL);
-    const data = await response.json();
-    return data;
+async function getIPAndLocation(customIP) {
+    if (customIP) {
+        const response = await fetch(`${LOCATION_API_URL}${customIP}/json/`);
+        const data = await response.json();
+        return data;
+    } else {
+        const response = await fetch(LOCATION_API_URL);
+        const data = await response.json();
+        return data;
+    }
 }
 
 async function getRandomAddress(lat, lon) {
@@ -26,7 +32,8 @@ function updateMap(address) {
 
 async function generateAddress() {
     try {
-        const locationData = await getIPAndLocation();
+        const customIP = document.getElementById('ip-input').value.trim();
+        const locationData = await getIPAndLocation(customIP);
         const ip = locationData.ip;
         document.getElementById('ip').textContent = ip;
 
