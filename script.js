@@ -1,6 +1,3 @@
-let mapPopupTimer;
-let mapPopupHideTimer;
-
 const LOCATION_API_URL = 'https://ipapi.co/json/';
 const NOMINATIM_API_URL = 'https://nominatim.openstreetmap.org/reverse';
 
@@ -42,9 +39,6 @@ async function generateAddress() {
         updateTableCell('postcode', address.postcode ?? 'N/A');
         updateTableCell('country', address.country_code?.toUpperCase() ?? 'N/A');
 
-        const cityAddress = `${address.city || address.town || ''}, ${address.state || ''}, ${address.country || ''}`;
-        updateMap(cityAddress);
-
         const fullAddress = `${streetAddress}, ${address.city || ''}, ${address.state || ''}, ${address.postcode || ''}, ${address.country || ''}`;
 
         const addressTable = document.querySelector('.address-table');
@@ -65,12 +59,10 @@ function copyToClipboard(text, element) {
         showTooltip(element);
     }, (err) => {
         console.error('无法复制文本: ', err);
-        // 添加一个回退方法，以防 Clipboard API 不可用
         fallbackCopyTextToClipboard(text, element);
     });
 }
 
-// 添加一个回退复制方法
 function fallbackCopyTextToClipboard(text, element) {
     const textArea = document.createElement("textarea");
     textArea.value = text;
@@ -100,12 +92,6 @@ function updateTableCell(id, text) {
     const content = cell.querySelector('.content');
     content.textContent = text;
     cell.onclick = (event) => copyToClipboard(text, event.currentTarget);
-
-    // 移除这部分代码
-    // if (id === 'street') {
-    //     cell.onmouseenter = showMapPopup;
-    //     cell.onmouseleave = hideMapPopup;
-    // }
 }
 
 function showMapPopup() {
@@ -118,28 +104,12 @@ function hideMapPopup() {
     mapPopup.style.display = 'none';
 }
 
-// 修改这部分代码
 document.addEventListener('DOMContentLoaded', function () {
     generateAddress();
 
-    // 移除这两行
-    // const streetElement = document.getElementById('street');
-    // streetElement.addEventListener('mouseenter', showMapPopup);
-    // streetElement.addEventListener('mouseleave', hideMapPopup);
-
-    // 添加地图emoji的事件监听器
     const mapEmoji = document.querySelector('.map-emoji');
     const mapPopup = document.getElementById('map-popup');
 
     mapEmoji.addEventListener('mouseenter', showMapPopup);
     mapEmoji.addEventListener('mouseleave', hideMapPopup);
 });
-
-// 移除这部分代码，因为我们已经在上面添加了事件监听器
-// document.addEventListener('DOMContentLoaded', function () {
-//     const mapEmoji = document.querySelector('.map-emoji');
-//     const mapPopup = document.getElementById('map-popup');
-
-//     mapEmoji.addEventListener('click', showMapPopup);
-//     mapPopup.addEventListener('click', hideMapPopup);
-// });
