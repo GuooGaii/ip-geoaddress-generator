@@ -1,5 +1,6 @@
 const LOCATION_API_URL = 'https://ipapi.co/json/';
 const NOMINATIM_API_URL = 'https://nominatim.openstreetmap.org/reverse';
+const RANDOM_USER_API_URL = 'https://randomuser.me/api/?nat=cn';
 
 async function getIPAndLocation(customIP) {
     if (customIP) {
@@ -24,6 +25,16 @@ async function getRandomAddress(lat, lon) {
     return data.address;
 }
 
+async function getRandomNameAndPhone() {
+    const response = await fetch(RANDOM_USER_API_URL);
+    const data = await response.json();
+    const user = data.results[0];
+    return {
+        name: `${user.name.last}${user.name.first}`,
+        phone: user.phone
+    };
+}
+
 function updateMap(address) {
     const mapFrame = document.getElementById('map');
     const googleMapUrl = `https://www.google.com/maps?q=${encodeURIComponent(address)}&z=15&output=embed&t=k`;
@@ -38,6 +49,10 @@ async function generateAddress() {
         document.getElementById('ip').textContent = ip;
 
         const address = await getRandomAddress(locationData.latitude, locationData.longitude);
+        const { name, phone } = await getRandomNameAndPhone();
+
+        updateTableCell('name', name);
+        updateTableCell('phone', phone);
 
         const streetAddress = `${address.house_number ?? ''} ${address.road ?? ''}`.trim();
         updateTableCell('street', streetAddress || 'N/A');
@@ -46,7 +61,7 @@ async function generateAddress() {
         updateTableCell('postcode', address.postcode ?? 'N/A');
         updateTableCell('country', address.country_code?.toUpperCase() ?? 'N/A');
 
-        const fullAddress = `${streetAddress}, ${address.city || ''}, ${address.state || ''}, ${address.postcode || ''}, ${address.country || ''}`;
+        const fullAddress = `${name}, ${phone}, ${streetAddress}, ${address.city || ''}, ${address.state || ''}, ${address.postcode || ''}, ${address.country || ''}`;
 
         const addressTable = document.querySelector('.address-table');
         addressTable.classList.remove('fade-in');
@@ -57,7 +72,7 @@ async function generateAddress() {
 
     } catch (error) {
         console.error('生成地址时出错:', error);
-        document.querySelectorAll('.address-table td').forEach(td => td.textContent = '无法获取地址');
+        document.querySelectorAll('.address-table td').forEach(td => td.textContent = '无法获取信息');
     }
 }
 
