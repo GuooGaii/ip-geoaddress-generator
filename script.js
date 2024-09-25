@@ -4,7 +4,7 @@ const RANDOM_USER_API_URL = 'https://randomuser.me/api/';
 
 async function getIPAndLocation(customIP) {
     if (customIP) {
-        const response = await fetch(`${LOCATION_API_URL}${customIP}/json/`);
+        const response = await fetch(`https://ipapi.co/${customIP}/json/`);
         const data = await response.json();
         return data;
     } else {
