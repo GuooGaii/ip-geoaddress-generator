@@ -59,7 +59,24 @@ function copyToClipboard(text, element) {
         showTooltip(element);
     }, (err) => {
         console.error('无法复制文本: ', err);
+        // 添加一个回退方法，以防 Clipboard API 不可用
+        fallbackCopyTextToClipboard(text, element);
     });
+}
+
+// 添加一个回退复制方法
+function fallbackCopyTextToClipboard(text, element) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showTooltip(element);
+    } catch (err) {
+        console.error('回退复制方法失败:', err);
+    }
+    document.body.removeChild(textArea);
 }
 
 function showTooltip(element) {
