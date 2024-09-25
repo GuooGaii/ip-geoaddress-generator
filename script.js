@@ -25,14 +25,22 @@ async function getRandomAddress(lat, lon) {
     return data.address;
 }
 
+function formatName(firstName, lastName, countryCode) {
+    const eastAsianCountries = ['CN', 'JP', 'KR', 'VN']; // 东亚国家列表
+    if (eastAsianCountries.includes(countryCode.toUpperCase())) {
+        return `${lastName}${firstName}`; // 东亚国家格式：姓名
+    } else {
+        return `${firstName} ${lastName}`; // 其他国家格式：名 姓
+    }
+}
+
 async function getRandomNameAndPhone(countryCode) {
-    // 将国家代码转换为 RandomUser API 支持的格式
     const apiNat = convertCountryCodeToNat(countryCode);
     const response = await fetch(`${RANDOM_USER_API_URL}?nat=${apiNat}`);
     const data = await response.json();
     const user = data.results[0];
     return {
-        name: `${user.name.last}${user.name.first}`,
+        name: formatName(user.name.first, user.name.last, countryCode),
         phone: user.phone
     };
 }
