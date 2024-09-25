@@ -1,3 +1,5 @@
+let mapPopupTimer;
+
 const LOCATION_API_URL = 'https://ipapi.co/json/';
 const NOMINATIM_API_URL = 'https://nominatim.openstreetmap.org/reverse';
 
@@ -38,6 +40,9 @@ async function generateAddress() {
         updateTableCell('state', address.state ?? 'N/A');
         updateTableCell('postcode', address.postcode ?? 'N/A');
         updateTableCell('country', address.country_code?.toUpperCase() ?? 'N/A');
+
+        const cityAddress = `${address.city || address.town || ''}, ${address.state || ''}, ${address.country || ''}`;
+        updateMap(cityAddress);
 
         const fullAddress = `${streetAddress}, ${address.city || ''}, ${address.state || ''}, ${address.postcode || ''}, ${address.country || ''}`;
 
@@ -94,6 +99,29 @@ function updateTableCell(id, text) {
     const content = cell.querySelector('.content');
     content.textContent = text;
     cell.onclick = (event) => copyToClipboard(text, event.currentTarget);
+
+    if (id === 'street') {
+        cell.onmouseenter = showMapPopup;
+        cell.onmouseleave = hideMapPopup;
+    }
 }
 
-generateAddress();
+function showMapPopup() {
+    clearTimeout(mapPopupTimer);
+    mapPopupTimer = setTimeout(() => {
+        const mapPopup = document.getElementById('map-popup');
+        mapPopup.style.display = 'block';
+    }, 2000);
+}
+
+function hideMapPopup() {
+    clearTimeout(mapPopupTimer);
+    const mapPopup = document.getElementById('map-popup');
+    mapPopup.style.display = 'none';
+}
+
+// 将这段代码移到文件末尾，并包装在 DOMContentLoaded 事件中
+document.addEventListener('DOMContentLoaded', function () {
+    generateAddress();
+    document.getElementById('street').onmouseleave = hideMapPopup;
+});

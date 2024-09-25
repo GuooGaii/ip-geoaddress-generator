@@ -52,13 +52,36 @@ button:hover {
 }
 
 #map {
-  height: 300px;
   width: 100%;
-  margin-top: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  height: 100%; /* 使地图填满整个弹出框 */
+  border: none;
 }
+
+/* 添加新的 map-popup 样式 */
+.map-popup {
+  display: none;
+  position: absolute;
+  width: 400px;
+  height: 250px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  padding: 10px;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 修改 #city 样式 */
+#city {
+  position: relative;
+}
+
+/* 当鼠标悬停在 #city 上时显示 map-popup */
+/* #city:hover .map-popup {
+  display: block;
+} */
 
 @keyframes fadeIn {
   from {
@@ -171,3 +194,13 @@ button:hover {
   visibility: visible;
   opacity: 1;
 }
+
+/* 修改 #street 样式 */
+#street {
+  position: relative;
+}
+
+/* 当鼠标悬停在 #street 上时显示 map-popup */
+/* #street:hover .map-popup {
+  display: block;
+} */

@@ -19,13 +19,22 @@
             <tr>
                 <th>地址</th>
                 <td id="street">
-                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                    <div class="tooltip">
+                        <span class="content"></span>
+                        <span class="tooltiptext">点击复制</span>
+                    </div>
+                    <div id="map-popup" class="map-popup">
+                        <iframe id="map" frameborder="0"></iframe>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <th>城市</th>
                 <td id="city">
-                    <div class="tooltip"><span class="content"></span><span class="tooltiptext">点击复制</span></div>
+                    <div class="tooltip">
+                        <span class="content"></span>
+                        <span class="tooltiptext">点击复制</span>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -48,7 +57,6 @@
             </tr>
         </table>
         <button onclick="generateAddress()" class="fade-in">生成新地址</button>
-        <iframe id="map" class="fade-in" frameborder="0"></iframe>
     </div>
 
     <script src="script.js"></script>
