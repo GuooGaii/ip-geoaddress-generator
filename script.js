@@ -1,4 +1,5 @@
 let mapPopupTimer;
+let mapPopupHideTimer;
 
 const LOCATION_API_URL = 'https://ipapi.co/json/';
 const NOMINATIM_API_URL = 'https://nominatim.openstreetmap.org/reverse';
@@ -108,20 +109,26 @@ function updateTableCell(id, text) {
 
 function showMapPopup() {
     clearTimeout(mapPopupTimer);
+    clearTimeout(mapPopupHideTimer);
     mapPopupTimer = setTimeout(() => {
         const mapPopup = document.getElementById('map-popup');
         mapPopup.style.display = 'block';
-    }, 2000);
+    }, 1500);
 }
 
 function hideMapPopup() {
     clearTimeout(mapPopupTimer);
-    const mapPopup = document.getElementById('map-popup');
-    mapPopup.style.display = 'none';
+    clearTimeout(mapPopupHideTimer);
+    mapPopupHideTimer = setTimeout(() => {
+        const mapPopup = document.getElementById('map-popup');
+        mapPopup.style.display = 'none';
+    }, 500);
 }
 
 // 将这段代码移到文件末尾，并包装在 DOMContentLoaded 事件中
 document.addEventListener('DOMContentLoaded', function () {
     generateAddress();
-    document.getElementById('street').onmouseleave = hideMapPopup;
+    const streetElement = document.getElementById('street');
+    streetElement.addEventListener('mouseenter', showMapPopup);
+    streetElement.addEventListener('mouseleave', hideMapPopup);
 });
