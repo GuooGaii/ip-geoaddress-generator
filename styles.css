@@ -127,8 +127,12 @@ p {
   margin-block: 30px 20px;
   border-collapse: separate;
   border-spacing: 0;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
   border-radius: var(--border-radius-large);
+}
+
+.address-table tr:nth-child(even) {
+  background-color: #f8f8f8;
 }
 
 .address-table th,
