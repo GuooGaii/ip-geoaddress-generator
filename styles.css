@@ -123,7 +123,6 @@ button {
   border-spacing: 0;
   background-color: #f0f0f0;
   border-radius: 10px;
-  overflow: hidden; /* 确保内容不会超出圆角 */
 }
 
 .address-table th,
