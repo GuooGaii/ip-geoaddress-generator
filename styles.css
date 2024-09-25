@@ -80,7 +80,6 @@ button:hover {
   border-collapse: collapse;
   background-color: #f0f0f0;
   border-radius: 10px;
-  overflow: hidden;
 }
 
 .address-table th,
@@ -110,6 +109,7 @@ button:hover {
 .tooltip {
   position: relative;
   display: inline-block;
+  z-index: 1;
 }
 
 .tooltip .tooltiptext {
@@ -121,8 +121,8 @@ button:hover {
   border-radius: 6px;
   padding: 5px;
   position: absolute;
-  z-index: 1;
-  bottom: 125%;
+  z-index: 100;
+  bottom: 100%;
   left: 50%;
   margin-left: -70px;
   opacity: 0;
