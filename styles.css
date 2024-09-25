@@ -143,13 +143,16 @@ p {
   color: white;
   inline-size: 15%;
   text-align: center;
+  white-space: nowrap;
+  padding: 10px 8px;
 }
 
 .address-table td {
   font-weight: bold;
   color: #4a4a4a;
   cursor: pointer;
-  inline-size: 70%;
+  inline-size: 80%;
+  padding: 10px 15px;
 }
 
 .address-table tr:first-child th:first-child {
