@@ -237,3 +237,16 @@ p {
   margin-left: 5px;
   position: relative;
 }
+
+.github-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 50px;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+}
+
+.github-icon:hover {
+  color: var(--secondary-color);
+}
