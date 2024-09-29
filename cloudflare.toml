@@ -1,0 +1,5 @@
+name = "ip-geoaddress-generator"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "pnpm dlx @cloudflare/next-on-pages@1" # 使用你的部署命令

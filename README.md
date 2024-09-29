@@ -27,6 +27,10 @@ https://ip-geoaddress-generator.pages.dev/
 - 响应式设计，适配各种设备
 - 支持浅色/深色主题切换
 
+## 一键部署到cloudflare
+
+[![Deploy to Cloudflare Pages](https://deploy.workers.cloudflare.com/button)](https://deploy.cloudflare.dev/?url=https://github.com/GuooGaii/ip-geoaddress-generator)
+
 ## 本地开发
 
 1. 克隆仓库：
