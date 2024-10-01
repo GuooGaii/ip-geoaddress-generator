@@ -4,9 +4,27 @@ export const API_URLS = {
 };
 
 export const COUNTRY_CODES = {
-    'Australia': 'au',
-    'Brazil': 'br',
-    // ... 其他国家代码 ...
+    'Australia': 'AU',
+    'Brazil': 'BR',
+    'Canada': 'CA',
+    'Switzerland': 'CH',
+    'Germany': 'DE',
+    'Denmark': 'DK',
+    'Spain': 'ES',
+    'Finland': 'FI',
+    'France': 'FR',
+    'United Kingdom': 'GB',
+    'Ireland': 'IE',
+    'India': 'IN',
+    'Iran': 'IR',
+    'Mexico': 'MX',
+    'Netherlands': 'NL',
+    'Norway': 'NO',
+    'New Zealand': 'NZ',
+    'Serbia': 'RS',
+    'Turkey': 'TR',
+    'Ukraine': 'UA',
+    'United States': 'US'
 };
 
 export const ADDRESS_FIELDS = ['lastName', 'firstName', 'address', 'city', 'state', 'zipCode', 'country', 'phone'];
