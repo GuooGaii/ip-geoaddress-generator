@@ -3,7 +3,7 @@
 import { Container, Flex, Heading, Box, Section, Card, Theme } from '@radix-ui/themes';
 import IPDisplay from './components/IPDisplay';
 import AddressManager from './components/AddressManager';
-import AddressGenerator from './components/AddressGenerator';
+import AddressGenerator from './components/AddressGenerator'; // 更新这一行
 import TopBar from './components/TopBar';
 import { AddressProvider } from './contexts/AddressContext';
 import { useState, useEffect, useRef } from 'react';
