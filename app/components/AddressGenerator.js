@@ -5,12 +5,37 @@ import { MagnifyingGlassIcon, ReloadIcon, PlusIcon } from '@radix-ui/react-icons
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAddress } from '../contexts/AddressContext';
 import GoogleMapTooltip from './GoogleMapTooltip';
+import { getIPAndLocation } from '../../utils/api';
 
 // 常量定义
 const API_URLS = {
-    LOCATION: 'https://ipapi.co/json/',
     NOMINATIM: 'https://nominatim.openstreetmap.org/reverse',
     RANDOM_USER: 'https://randomuser.me/api/'
+};
+
+// 添加国家代码映射
+const COUNTRY_CODES = {
+    'Australia': 'au',
+    'Brazil': 'br',
+    'Canada': 'ca',
+    'Switzerland': 'ch',
+    'Germany': 'de',
+    'Denmark': 'dk',
+    'Spain': 'es',
+    'Finland': 'fi',
+    'France': 'fr',
+    'United Kingdom': 'gb',
+    'Ireland': 'ie',
+    'India': 'in',
+    'Iran': 'ir',
+    'Mexico': 'mx',
+    'Netherlands': 'nl',
+    'Norway': 'no',
+    'New Zealand': 'nz',
+    'Serbia': 'rs',
+    'Turkey': 'tr',
+    'Ukraine': 'ua',
+    'United States': 'us'
 };
 
 const ADDRESS_FIELDS = ['lastName', 'firstName', 'address', 'city', 'state', 'zipCode', 'country', 'phone'];
@@ -38,7 +63,7 @@ function useAddressGenerator() {
         try {
             const locationData = await getIPAndLocation(customIP);
             const addressData = await getRandomAddress(locationData.latitude, locationData.longitude);
-            const userData = await getRandomUserData();
+            const userData = await getRandomUserData(addressData.country);
 
             setAddress({
                 firstName: userData.firstName,
@@ -51,6 +76,7 @@ function useAddressGenerator() {
                 phone: userData.phone
             });
         } catch (error) {
+            console.error("生成地址时出错:", error);
             setError('生成地址时出错，请稍后再试');
         } finally {
             setLoading(false);
@@ -61,30 +87,24 @@ function useAddressGenerator() {
 }
 
 // API 调用函数
-async function getIPAndLocation(customIP) {
-    const url = customIP ? `https://ipapi.co/${customIP}/json/` : API_URLS.LOCATION;
-    const response = await fetch(url);
-    return await response.json();
-}
-
 async function getRandomAddress(lat, lon) {
     const radius = 0.01;
     const randomLat = lat + (Math.random() - 0.5) * radius;
     const randomLon = lon + (Math.random() - 0.5) * radius;
 
     const url = `${API_URLS.NOMINATIM}?format=json&lat=${randomLat}&lon=${randomLon}&zoom=18&addressdetails=1&accept-language=en`;
+    console.log("请求地址:", url);
     const response = await fetch(url);
     const data = await response.json();
     return data.address;
 }
 
-async function getRandomUserData() {
-    const englishCountries = ['us', 'gb', 'au', 'ca', 'nz'];
-    const randomCountry = englishCountries[Math.floor(Math.random() * englishCountries.length)];
-
-    const response = await fetch(`${API_URLS.RANDOM_USER}?nat=${randomCountry}`);
+async function getRandomUserData(country) {
+    const countryCode = COUNTRY_CODES[country] || 'us'; // 默认使用美国
+    const response = await fetch(`${API_URLS.RANDOM_USER}?nat=${countryCode}`);
     const data = await response.json();
     const user = data.results[0];
+    console.log("获取随机用户数据:", data);
     return {
         firstName: user.name.first,
         lastName: user.name.last,
@@ -122,12 +142,6 @@ export default function AddressGenerator() {
         setTooltipStates(prev => ({ ...prev, [key]: { content, visible } }));
     }, []);
 
-    const buttonStyle = {
-        minWidth: '120px',
-        height: '40px',
-        transition: 'none'
-    };
-
     return (
         <Flex direction="column" gap="4" style={{ height: '100%', padding: '16px' }}>
             <AddressInput
@@ -135,7 +149,6 @@ export default function AddressGenerator() {
                 setIpInput={setIpInput}
                 generateAddress={generateAddress}
                 loading={loading}
-                buttonStyle={buttonStyle}
             />
             {error && <Text color="red">{error}</Text>}
             <AddressTable
@@ -144,13 +157,13 @@ export default function AddressGenerator() {
                 handleTooltip={handleTooltip}
                 tooltipStates={tooltipStates}
             />
-            <SaveAddressButton saveAddress={() => saveAddress(address)} buttonStyle={buttonStyle} />
+            <SaveAddressButton saveAddress={() => saveAddress(address)} />
         </Flex>
     );
 }
 
 // 子组件
-function AddressInput({ ipInput, setIpInput, generateAddress, loading, buttonStyle }) {
+function AddressInput({ ipInput, setIpInput, generateAddress, loading }) {
     return (
         <Flex gap="3" width="100%" height="40px" align="center">
             <TextField.Root
@@ -168,7 +181,6 @@ function AddressInput({ ipInput, setIpInput, generateAddress, loading, buttonSty
                 size="3"
                 onClick={() => generateAddress(ipInput)}
                 disabled={loading}
-                style={buttonStyle}
             >
                 <ReloadIcon />
                 {loading ? '生成中...' : '生成地址'}
@@ -192,14 +204,14 @@ function AddressTable({ address, copyToClipboard, handleTooltip, tooltipStates }
                                     <Tooltip
                                         content={tooltipStates[key]?.content || "点击复制"}
                                         open={tooltipStates[key]?.visible}
-                                        align="center" // 将 Tooltip 对齐到文本的中心
-                                        sideOffset={4}  // 根据需要调整 tooltip 距离文本的偏移量
+                                        align="center"
+                                        sideOffset={4}
                                     >
                                         <Text
                                             as="span"
                                             style={{
                                                 cursor: 'pointer',
-                                                width: 'auto', // 让 Text 元素宽度自适应内容
+                                                width: 'auto',
                                                 display: 'inline-block',
                                                 position: 'relative'
                                             }}
@@ -213,7 +225,6 @@ function AddressTable({ address, copyToClipboard, handleTooltip, tooltipStates }
                                     {key === 'address' && <GoogleMapTooltip address={address} />}
                                 </Flex>
                             </Table.Cell>
-
                         </Table.Row>
                     ))}
                 </Table.Body>
@@ -222,13 +233,12 @@ function AddressTable({ address, copyToClipboard, handleTooltip, tooltipStates }
     );
 }
 
-function SaveAddressButton({ saveAddress, buttonStyle }) {
+function SaveAddressButton({ saveAddress }) {
     return (
         <Flex justify="center" mt="4">
             <Button
                 size="3"
                 onClick={saveAddress}
-                style={buttonStyle}
             >
                 <PlusIcon />
                 保存地址
