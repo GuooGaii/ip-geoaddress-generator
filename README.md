@@ -60,3 +60,7 @@ https://ip-geoaddress-generator.pages.dev/
 ## 许可证
 
 [MIT](https://choosealicense.com/licenses/mit/)
+
+## 支持我
+
+![支付宝收款码](支付宝收款码.png)
