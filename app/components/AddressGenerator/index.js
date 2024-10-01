@@ -1,13 +1,13 @@
 'use client';
 
-import { Flex, Text } from '@radix-ui/themes';
+import { Flex, Text, Button } from '@radix-ui/themes';
 import { useState, useEffect, useRef } from 'react';
 import { useAddress } from '../../contexts/AddressContext';
 import { useAddressGenerator } from './useAddressGenerator';
 import { useTooltip } from './useTooltip';
 import { AddressInput } from './IPInput';
 import { AddressTable } from './AddressTable';
-import { SaveAddressButton } from './SaveAddressButton';
+import { PlusIcon } from '@radix-ui/react-icons';
 
 export default function AddressGenerator() {
     const { saveAddress } = useAddress();
@@ -38,7 +38,12 @@ export default function AddressGenerator() {
                 handleTooltip={handleTooltip}
                 tooltipStates={tooltipStates}
             />
-            <SaveAddressButton saveAddress={() => saveAddress(address)} />
+            <Flex justify="center" mt="4">
+                <Button size="3" onClick={() => saveAddress(address)}>
+                    <PlusIcon />
+                    保存地址
+                </Button>
+            </Flex>
         </Flex>
     );
 }
