@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Text, Flex, Box } from '@radix-ui/themes';
-import { getIPAndLocation } from '../../utils/api';
+import { addressService } from '../services/addressService';
 
 export default function IPDisplay() {
     const [ipAddress, setIpAddress] = useState('');
@@ -10,7 +10,7 @@ export default function IPDisplay() {
     useEffect(() => {
         async function fetchIP() {
             try {
-                const data = await getIPAndLocation();
+                const data = await addressService.getIPAndLocation();
                 setIpAddress(data.ip);
             } catch (error) {
                 console.error('获取IP地址时出错:', error);

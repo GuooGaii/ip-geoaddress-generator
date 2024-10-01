@@ -1,7 +1,8 @@
 import { Flex, TextField, Button } from '@radix-ui/themes';
 import { MagnifyingGlassIcon, ReloadIcon } from '@radix-ui/react-icons';
+import PropTypes from 'prop-types';
 
-export function AddressInput({ ipInput, setIpInput, generateAddress, loading }) {
+export function AddressInput({ ipInput, setIpInput, onGenerateAddress, loading }) {
     return (
         <Flex gap="3" width="100%" height="40px" align="center">
             <TextField.Root
@@ -17,7 +18,7 @@ export function AddressInput({ ipInput, setIpInput, generateAddress, loading }) 
             </TextField.Root>
             <Button
                 size="3"
-                onClick={() => generateAddress(ipInput)}
+                onClick={() => onGenerateAddress(ipInput)}
                 disabled={loading}
             >
                 <ReloadIcon />
@@ -26,3 +27,10 @@ export function AddressInput({ ipInput, setIpInput, generateAddress, loading }) 
         </Flex>
     );
 }
+
+AddressInput.propTypes = {
+    ipInput: PropTypes.string.isRequired,
+    setIpInput: PropTypes.func.isRequired,
+    onGenerateAddress: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired
+};

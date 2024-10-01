@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-import { getIPAndLocation } from '../../../utils/api';
-import { getRandomAddress, getRandomUserData } from './api';
+import { addressService } from '../../services/addressService';
 
 export function useAddressGenerator() {
     const [address, setAddress] = useState({});
@@ -11,9 +10,9 @@ export function useAddressGenerator() {
         setLoading(true);
         setError('');
         try {
-            const locationData = await getIPAndLocation(customIP);
-            const addressData = await getRandomAddress(locationData.latitude, locationData.longitude);
-            const userData = await getRandomUserData(addressData.country);
+            const locationData = await addressService.getIPAndLocation(customIP);
+            const addressData = await addressService.getRandomAddress(locationData.latitude, locationData.longitude);
+            const userData = await addressService.getRandomUserData(addressData.country);
 
             setAddress({
                 firstName: userData.firstName,
@@ -24,7 +23,7 @@ export function useAddressGenerator() {
                 zipCode: addressData.postcode || 'N/A',
                 country: addressData.country || 'N/A',
                 phone: userData.phone,
-                ssn: userData.ssn || 'N/A' // 添加 SSN
+                ssn: userData.ssn
             });
         } catch (error) {
             console.error("生成地址时出错:", error);
