@@ -2,11 +2,11 @@
 
 import { Flex, Text, Button } from '@radix-ui/themes';
 import { useState, useEffect, useRef } from 'react';
-import { useAddress } from '../../contexts/AddressContext';
-import { useAddressGenerator } from './useAddressGenerator';
-import { useTooltip } from './useTooltip';
-import { AddressInput } from './IPInput';
-import { AddressTable } from './AddressTable';
+import { useAddress } from 'app/contexts/AddressContext';
+import { useAddressGenerator } from 'app/components/AddressGenerator/useAddressGenerator';
+import { useTooltip } from 'app/components/AddressGenerator/useTooltip';
+import { AddressInput } from 'app/components/AddressGenerator/IPInput';
+import { AddressTable } from 'app/components/AddressGenerator/AddressTable';
 import { PlusIcon } from '@radix-ui/react-icons';
 
 export default function AddressGenerator() {

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { addressService } from '../../services/addressService';
+import { addressService } from 'app/services/addressService';
 
 export function useAddressGenerator() {
     const [address, setAddress] = useState({});

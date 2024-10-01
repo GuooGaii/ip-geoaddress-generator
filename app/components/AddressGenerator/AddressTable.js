@@ -1,7 +1,7 @@
 import { Flex, Table, Text, Tooltip, ScrollArea } from '@radix-ui/themes';
 import PropTypes from 'prop-types';
 import GoogleMapTooltip from '../GoogleMapTooltip';
-import { ADDRESS_FIELDS, LABELS } from './constants';
+import { ADDRESS_FIELDS, LABELS } from 'app/constants/addressFields';
 
 export function AddressTable({ address, copyToClipboard, handleTooltip, tooltipStates }) {
     return (

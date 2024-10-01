@@ -1,10 +1,10 @@
 'use client';
 
-import { useAddress } from '../contexts/AddressContext';
+import { useAddress } from 'app/contexts/AddressContext';
 import { Button, ScrollArea, Flex, Text, Table, TextField } from '@radix-ui/themes';
 import { TrashIcon, DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState, useMemo } from 'react';
-import { ADDRESS_FIELDS, LABELS } from './AddressGenerator/constants';
+import { ADDRESS_FIELDS } from 'app/constants/addressFields';
 
 const buttonStyle = {
     minWidth: '120px',

@@ -1,4 +1,5 @@
-import { API_URLS, COUNTRY_CODES } from '../components/AddressGenerator/constants';
+import { API_URLS } from '../constants/apiUrls';
+import { COUNTRY_CODES } from '../constants/countryCodes';
 
 const LOCATION_API = 'https://ipapi.co/json/';
 

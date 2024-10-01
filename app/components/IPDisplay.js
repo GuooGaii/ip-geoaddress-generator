@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Text, Flex, Box } from '@radix-ui/themes';
-import { addressService } from '../services/addressService';
+import { addressService } from 'app/services/addressService';
 
 export default function IPDisplay() {
     const [ipAddress, setIpAddress] = useState('');
