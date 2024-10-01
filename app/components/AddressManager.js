@@ -4,6 +4,7 @@ import { useAddress } from '../contexts/AddressContext';
 import { Button, ScrollArea, Flex, Text, Table, TextField } from '@radix-ui/themes';
 import { TrashIcon, DownloadIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState, useMemo } from 'react';
+import { ADDRESS_FIELDS, LABELS } from './AddressGenerator/constants';
 
 const buttonStyle = {
     minWidth: '120px',
@@ -79,7 +80,7 @@ function AddressRow({ addr, deleteAddress }) {
         <Table.Row>
             <Table.Cell style={{ width: '80%' }}>
                 <Text size="2">
-                    {`${addr.lastName},${addr.firstName},${addr.address},${addr.city},${addr.state},${addr.zipCode},${addr.country},${addr.phone}`}
+                    {ADDRESS_FIELDS.map(field => addr[field]).join(',')}
                 </Text>
             </Table.Cell>
             <Table.Cell style={{ width: '20%' }}>

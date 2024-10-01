@@ -23,7 +23,8 @@ export function useAddressGenerator() {
                 state: addressData.state || 'N/A',
                 zipCode: addressData.postcode || 'N/A',
                 country: addressData.country || 'N/A',
-                phone: userData.phone
+                phone: userData.phone,
+                ssn: userData.ssn || 'N/A' // 添加 SSN
             });
         } catch (error) {
             console.error("生成地址时出错:", error);

@@ -27,7 +27,7 @@ export const COUNTRY_CODES = {
     'United States': 'US'
 };
 
-export const ADDRESS_FIELDS = ['lastName', 'firstName', 'address', 'city', 'state', 'zipCode', 'country', 'phone'];
+export const ADDRESS_FIELDS = ['lastName', 'firstName', 'address', 'city', 'state', 'zipCode', 'country', 'phone', 'ssn'];
 
 export const LABELS = {
     firstName: '名',
@@ -37,5 +37,6 @@ export const LABELS = {
     state: '州/省',
     zipCode: '邮编',
     country: '国家',
-    phone: '电话'
+    phone: '电话',
+    ssn: 'SSN'
 };
