@@ -1,4 +1,5 @@
 import { Flex, Table, Text, Tooltip, ScrollArea } from '@radix-ui/themes';
+import PropTypes from 'prop-types';
 import GoogleMapTooltip from '../GoogleMapTooltip';
 import { ADDRESS_FIELDS, LABELS } from './constants';
 
@@ -45,3 +46,16 @@ export function AddressTable({ address, copyToClipboard, handleTooltip, tooltipS
         </ScrollArea>
     );
 }
+
+AddressTable.propTypes = {
+    address: PropTypes.shape({
+        address: PropTypes.string,
+        city: PropTypes.string,
+        state: PropTypes.string,
+        zipCode: PropTypes.string,
+        country: PropTypes.string,
+    }).isRequired,
+    copyToClipboard: PropTypes.func.isRequired,
+    handleTooltip: PropTypes.func.isRequired,
+    tooltipStates: PropTypes.object.isRequired,
+};
