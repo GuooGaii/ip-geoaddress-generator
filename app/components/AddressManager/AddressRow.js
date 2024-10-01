@@ -1,6 +1,7 @@
 import { Button, Text, Table } from '@radix-ui/themes';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { ADDRESS_FIELDS } from 'app/constants/addressFields';
+import PropTypes from 'prop-types';
 
 export default function AddressRow({ addr, deleteAddress }) {
     return (
@@ -19,3 +20,10 @@ export default function AddressRow({ addr, deleteAddress }) {
         </Table.Row>
     );
 }
+
+AddressRow.propTypes = {
+    addr: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+    }).isRequired,
+    deleteAddress: PropTypes.func.isRequired,
+};

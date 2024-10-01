@@ -1,5 +1,6 @@
 import { Button, Flex } from '@radix-ui/themes';
 import { TrashIcon, DownloadIcon } from '@radix-ui/react-icons';
+import PropTypes from 'prop-types';
 
 const buttonStyle = {
     minWidth: '120px',
@@ -34,3 +35,9 @@ export default function ActionButtons({ addressCount, deleteAllAddresses, saveTo
         </Flex>
     );
 }
+
+ActionButtons.propTypes = {
+    addressCount: PropTypes.number.isRequired,
+    deleteAllAddresses: PropTypes.func.isRequired,
+    saveToTxtFile: PropTypes.func.isRequired
+};

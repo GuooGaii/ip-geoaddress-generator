@@ -1,5 +1,6 @@
 import { TextField } from '@radix-ui/themes';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import PropTypes from 'prop-types';
 
 export default function SearchField({ searchQuery, setSearchQuery }) {
     return (
@@ -16,3 +17,8 @@ export default function SearchField({ searchQuery, setSearchQuery }) {
         </TextField.Root>
     );
 }
+
+SearchField.propTypes = {
+    searchQuery: PropTypes.string.isRequired,
+    setSearchQuery: PropTypes.func.isRequired,
+};

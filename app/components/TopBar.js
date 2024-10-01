@@ -1,6 +1,7 @@
 import { Box, Link, Button, Flex } from '@radix-ui/themes';
 import { FaGithub } from 'react-icons/fa';
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
+import PropTypes from 'prop-types';
 
 export default function TopBar({ theme, setTheme }) {
     const topBarStyle = {
@@ -30,3 +31,8 @@ export default function TopBar({ theme, setTheme }) {
         </Box>
     );
 }
+
+TopBar.propTypes = {
+    theme: PropTypes.oneOf(['light', 'dark']).isRequired,
+    setTheme: PropTypes.func.isRequired,
+};

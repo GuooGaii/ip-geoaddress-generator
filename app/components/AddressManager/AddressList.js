@@ -1,5 +1,6 @@
 import { ScrollArea, Flex, Text, Table } from '@radix-ui/themes';
 import AddressRow from 'app/components/AddressManager/AddressRow';
+import PropTypes from 'prop-types';
 
 export default function AddressList({ filteredAddresses, deleteAddress }) {
     if (filteredAddresses.length === 0) {
@@ -22,3 +23,10 @@ export default function AddressList({ filteredAddresses, deleteAddress }) {
         </ScrollArea>
     );
 }
+
+AddressList.propTypes = {
+    filteredAddresses: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string.isRequired,
+    })).isRequired,
+    deleteAddress: PropTypes.func.isRequired,
+};
