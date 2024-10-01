@@ -63,4 +63,4 @@ https://ip-geoaddress-generator.pages.dev/
 
 ## 支持我
 
-![支付宝收款码](支付宝收款码.png)
+<img src="支付宝收款码.png" alt="支付宝收款码" style="width: 50%; max-width: 300px;"/>
