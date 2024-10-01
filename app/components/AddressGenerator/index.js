@@ -4,7 +4,7 @@ import { Flex, Text } from '@radix-ui/themes';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAddress } from '../../contexts/AddressContext';
 import { useAddressGenerator } from './useAddressGenerator';
-import { AddressInput } from './AddressInput';
+import { AddressInput as IPInput } from './IPInput';
 import { AddressTable } from './AddressTable';
 import { SaveAddressButton } from './SaveAddressButton';
 
@@ -39,7 +39,7 @@ export default function AddressGenerator() {
 
     return (
         <Flex direction="column" gap="4" style={{ height: '100%', padding: '16px' }}>
-            <AddressInput
+            <IPInput
                 ipInput={ipInput}
                 setIpInput={setIpInput}
                 generateAddress={generateAddress}
