@@ -34,3 +34,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
