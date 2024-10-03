@@ -6,7 +6,7 @@ import { useAddress } from 'app/contexts/AddressContext';
 import { useAddressGenerator } from 'app/components/AddressGenerator/useAddressGenerator';
 import { useTooltip } from 'app/components/AddressGenerator/useTooltip';
 import { IPInput } from 'app/components/AddressGenerator/IPInput';
-import { CountryCityInput } from 'app/components/AddressGenerator/CountryCityInput';
+import { RegionInput } from 'app/components/AddressGenerator/RegionInput';
 import { AddressTable } from 'app/components/AddressGenerator/AddressTable';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { addressService } from 'app/services/addressService';
@@ -23,7 +23,7 @@ const usCities = {
 
 export default function AddressGenerator() {
     const { saveAddress } = useAddress();
-    const { address, loading, error, generateAddress } = useAddressGenerator();
+    const { address, setAddress, loading, setLoading, error, setError } = useAddressGenerator();
     const { tooltipStates, copyToClipboard, handleTooltip } = useTooltip();
     const [ipInput, setIpInput] = useState('');
     const initialLoadRef = useRef(true);
@@ -35,10 +35,10 @@ export default function AddressGenerator() {
 
     useEffect(() => {
         if (initialLoadRef.current) {
-            generateAddress('');
+            handleGenerate('ip'); // 使用 'ip' 作为默认类型
             initialLoadRef.current = false;
         }
-    }, [generateAddress]);
+    }, []);
 
     useEffect(() => {
         if (state) {
@@ -47,13 +47,40 @@ export default function AddressGenerator() {
         }
     }, [state]);
 
-    const handleCountryCityGenerate = async () => {
-        if (country && state && city) {
-            const coordinates = await addressService.getCityCenterCoordinates(country, state, city);
-            if (coordinates) {
-                const newAddress = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
-                saveAddress(newAddress);
+    const handleGenerate = async (type) => {
+        setLoading(true);
+        setError('');
+        try {
+            let coordinates;
+            if (type === 'ip') {
+                coordinates = await addressService.getIPCoordinates(ipInput);
+            } else if (type === 'country') {
+                coordinates = await addressService.getCityCenterCoordinates(country, state, city);
             }
+
+            if (coordinates) {
+                const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
+                const userData = await addressService.getRandomUserData(addressData.country);
+
+                const newAddress = {
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    address: `${addressData.house_number || ''} ${addressData.road || ''}`.trim() || 'N/A',
+                    city: addressData.city || addressData.town || 'N/A',
+                    state: addressData.state || 'N/A',
+                    zipCode: addressData.postcode || 'N/A',
+                    country: addressData.country || 'N/A',
+                    phone: userData.phone,
+                    ssn: userData.ssn
+                };
+
+                setAddress(newAddress);
+            }
+        } catch (error) {
+            console.error("生成地址时出错:", error);
+            setError('生成地址时出错，请稍后再试');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -70,15 +97,15 @@ export default function AddressGenerator() {
                         <IPInput
                             ipInput={ipInput}
                             setIpInput={setIpInput}
-                            onGenerateAddress={generateAddress}
+                            onGenerateAddress={() => handleGenerate('ip')}
                             loading={loading}
                         />
                     </Tabs.Content>
 
                     <Tabs.Content value="country" style={{ width: '100%' }}>
-                        <CountryCityInput
+                        <RegionInput
                             loading={loading}
-                            onGenerate={handleCountryCityGenerate}
+                            onGenerate={() => handleGenerate('country')}
                             country={country}
                             setCountry={setCountry}
                             state={state}

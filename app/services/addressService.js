@@ -83,17 +83,18 @@ export const addressService = {
     /**
      * 获取 IP 地址和位置信息
      * 
-     * 使用 ipapi.co API 获取 IP 地址的详细位置信息。可以提供自定义 IP 地址，否则获取当前用户的 IP 信息。
+     * 使用 ipapi.co API 获取 IP 地址的经纬度。可以提供自定义 IP 地址，否则获取当前用户的 IP 信息。
      * 
      * @param {string} [customIP] - 可选的自定义 IP 地址
-     * @returns {Promise<Object>} 包含 IP 和位置信息的对象，包括 IP 地址、城市、地区、国家等详细信息
+     * @returns {Promise<Object>} 包含 IP 和位置信息的对象
      * @throws {Error} 如果 API 请求失败
      */
-    async getIPAndLocation(customIP) {
+    async getIPCoordinates(customIP) {
         const url = customIP ? `https://ipapi.co/${customIP}/json/` : LOCATION_API;
 
         try {
-            return await fetchWithTimeout(url);
+            const data = await fetchWithTimeout(url);
+            return { latitude: data.latitude, longitude: data.longitude };
         } catch (error) {
             console.error("获取 IP 和位置信息失败:", error);
             throw error;

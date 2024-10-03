@@ -2,7 +2,7 @@ import { Flex, Button, Select } from '@radix-ui/themes';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import PropTypes from 'prop-types';
 
-export function CountryCityInput({
+export function RegionInput({
     loading,
     onGenerate,
     country,
@@ -61,7 +61,7 @@ export function CountryCityInput({
     );
 }
 
-CountryCityInput.propTypes = {
+RegionInput.propTypes = {
     loading: PropTypes.bool.isRequired,
     onGenerate: PropTypes.func.isRequired,
     country: PropTypes.string.isRequired,
