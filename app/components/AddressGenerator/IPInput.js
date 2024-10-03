@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 export function AddressInput({ ipInput, setIpInput, onGenerateAddress, loading }) {
     return (
-        <Flex gap="3" width="100%" height="40px" align="center">
+        <Flex gap="3" width="100%" align="center">
             <TextField.Root
                 size="3"
                 placeholder="输入IP地址（可选）"
