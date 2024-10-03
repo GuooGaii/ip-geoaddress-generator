@@ -3,6 +3,31 @@ import { COUNTRY_CODES } from '../constants/countryCodes';
 
 const LOCATION_API = 'https://ipapi.co/json/';
 
+// 新增：通用的fetch函数，包含错误处理和超时
+const fetchWithTimeout = async (url, options = {}, timeout = 5000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+        });
+        clearTimeout(id);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            throw new Error('请求超时');
+        }
+        throw error;
+    }
+};
+
 export const addressService = {
     /**
      * 根据给定的经纬度获取随机地址
@@ -20,9 +45,14 @@ export const addressService = {
         const randomLon = lon + (Math.random() - 0.5) * radius;
 
         const url = `${API_URLS.NOMINATIM}?format=json&lat=${randomLat}&lon=${randomLon}&zoom=18&addressdetails=1&accept-language=en`;
-        const response = await fetch(url);
-        const data = await response.json();
-        return data.address;
+
+        try {
+            const data = await fetchWithTimeout(url);
+            return data.address;
+        } catch (error) {
+            console.error('获取随机地址失败:', error);
+            throw error;
+        }
     },
 
     /**
@@ -37,15 +67,17 @@ export const addressService = {
     async getRandomUserData(country) {
         const countryCode = COUNTRY_CODES[country] || 'us';
         const url = `${API_URLS.RANDOM_USER}?nat=${countryCode}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        const user = data.results[0];
-        return {
-            firstName: user.name.first,
-            lastName: user.name.last,
-            phone: user.phone,
-            ssn: user.id.value || 'N/A'
-        };
+
+        try {
+            const { results } = await fetchWithTimeout(url);
+            const [user] = results;
+            const { name: { first, last }, phone, id: { value: ssn = 'N/A' } } = user;
+
+            return { firstName: first, lastName: last, phone, ssn };
+        } catch (error) {
+            console.error('获取随机用户数据失败:', error);
+            throw error;
+        }
     },
 
     /**
@@ -59,12 +91,9 @@ export const addressService = {
      */
     async getIPAndLocation(customIP) {
         const url = customIP ? `https://ipapi.co/${customIP}/json/` : LOCATION_API;
+
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
+            return await fetchWithTimeout(url);
         } catch (error) {
             console.error("获取 IP 和位置信息失败:", error);
             throw error;
@@ -72,25 +101,30 @@ export const addressService = {
     },
 
     /**
-     * 根据国家和城市获取随机地址的经纬度
+     * 根据国家和城市获取的经纬度
      * 
-     * 使用 Nominatim API 根据提供的国家和城市名称获取一个随机地址的经纬度坐标。
+     * 使用 Nominatim API 根据提供的国家和城市名称获取一个的经纬度坐标。
      * 
      * @param {string} country - 国家名称
      * @param {string} city - 城市名称
      * @returns {Promise<Object>} 包含经纬度的对象 { latitude: number, longitude: number }
      * @throws {Error} 如果未找到匹配的地址或 API 请求失败
      */
-    async getRandomAddressByCountryCity(country, city) {
+    async getCityCenterCoordinates(country, city) {
         const url = `${API_URLS.NOMINATIM}?format=json&country=${encodeURIComponent(country)}&city=${encodeURIComponent(city)}&limit=1`;
-        const response = await fetch(url);
-        const data = await response.json();
 
-        if (data.length === 0) {
-            throw new Error('未找到匹配的地址');
+        try {
+            const data = await fetchWithTimeout(url);
+
+            if (data.length === 0) {
+                throw new Error('未找到匹配的地址');
+            }
+
+            const { lat, lon } = data[0];
+            return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
+        } catch (error) {
+            console.error('获取城市中心坐标失败:', error);
+            throw error;
         }
-
-        const { lat, lon } = data[0];
-        return { latitude: parseFloat(lat), longitude: parseFloat(lon) };
-    }
+    },
 };
