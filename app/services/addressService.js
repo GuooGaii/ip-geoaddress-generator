@@ -101,6 +101,18 @@ export const addressService = {
         }
     },
 
+    async getCurrentIP() {
+        const url = 'https://api.ipify.org?format=json';
+
+        try {
+            const data = await fetchWithTimeout(url);
+            return data.ip;
+        } catch (error) {
+            console.error("获取 IP 地址失败:", error);
+            throw error;
+        }
+    },
+
     /**
      * 根据城市获取的经纬度
      * 

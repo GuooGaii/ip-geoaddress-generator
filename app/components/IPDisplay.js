@@ -10,8 +10,8 @@ export default function IPDisplay() {
     useEffect(() => {
         async function fetchIP() {
             try {
-                const data = await addressService.getIPAndLocation();
-                setIpAddress(data.ip);
+                const ip = await addressService.getCurrentIP();
+                setIpAddress(ip);
             } catch (error) {
                 console.error('获取IP地址时出错:', error);
                 setIpAddress('无法获取IP地址');
