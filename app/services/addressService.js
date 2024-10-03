@@ -44,7 +44,7 @@ export const addressService = {
         const randomLat = lat + (Math.random() - 0.5) * radius;
         const randomLon = lon + (Math.random() - 0.5) * radius;
 
-        const url = `${API_URLS.NOMINATIM}?format=json&lat=${randomLat}&lon=${randomLon}&zoom=18&addressdetails=1&accept-language=en`;
+        const url = `${API_URLS.NOMINATIM}/reverse?format=json&lat=${randomLat}&lon=${randomLon}&zoom=18&addressdetails=1&accept-language=en`;
 
         try {
             const data = await fetchWithTimeout(url);
@@ -101,17 +101,25 @@ export const addressService = {
     },
 
     /**
-     * 根据国家和城市获取的经纬度
+     * 根据城市获取的经纬度
      * 
-     * 使用 Nominatim API 根据提供的国家和城市名称获取一个的经纬度坐标。
+     * 使用 Nominatim API 根据提供的国家、城市和可选的州名称获取一个的经纬度坐标。
      * 
      * @param {string} country - 国家名称
      * @param {string} city - 城市名称
+     * @param {string} [state=''] - 可选的州名称，默认为空字符串
      * @returns {Promise<Object>} 包含经纬度的对象 { latitude: number, longitude: number }
      * @throws {Error} 如果未找到匹配的地址或 API 请求失败
      */
-    async getCityCenterCoordinates(country, city) {
-        const url = `${API_URLS.NOMINATIM}?format=json&country=${encodeURIComponent(country)}&city=${encodeURIComponent(city)}&limit=1`;
+    async getCityCenterCoordinates(country, state, city) {
+        let url = `${API_URLS.NOMINATIM}?format=json&country=${encodeURIComponent(country)}`;
+
+        if (state) {
+            url += `&state=${encodeURIComponent(state)}`;
+        }
+
+        url += `&city=${encodeURIComponent(city)}&accept-language=en`;
+        console.log('url', url);
 
         try {
             const data = await fetchWithTimeout(url);

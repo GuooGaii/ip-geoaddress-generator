@@ -5,17 +5,33 @@ import { useState, useEffect, useRef } from 'react';
 import { useAddress } from 'app/contexts/AddressContext';
 import { useAddressGenerator } from 'app/components/AddressGenerator/useAddressGenerator';
 import { useTooltip } from 'app/components/AddressGenerator/useTooltip';
-import { AddressInput } from 'app/components/AddressGenerator/IPInput';
+import { IPInput } from 'app/components/AddressGenerator/IPInput';
 import { CountryCityInput } from 'app/components/AddressGenerator/CountryCityInput';
 import { AddressTable } from 'app/components/AddressGenerator/AddressTable';
 import { PlusIcon } from '@radix-ui/react-icons';
+import { addressService } from 'app/services/addressService';
+
+const countries = ['United States'];
+const usStates = ['California', 'New York', 'Texas', 'Florida', 'Illinois'];
+const usCities = {
+    California: ['Los Angeles', 'San Francisco', 'San Diego'],
+    'New York': ['New York City', 'Buffalo', 'Albany'],
+    Texas: ['Houston', 'Austin', 'Dallas'],
+    Florida: ['Miami', 'Orlando', 'Tampa'],
+    Illinois: ['Chicago', 'Springfield', 'Peoria']
+};
 
 export default function AddressGenerator() {
     const { saveAddress } = useAddress();
-    const { address, loading, error, generateAddress, generateAddressByCountryCity } = useAddressGenerator();
+    const { address, loading, error, generateAddress } = useAddressGenerator();
     const { tooltipStates, copyToClipboard, handleTooltip } = useTooltip();
     const [ipInput, setIpInput] = useState('');
     const initialLoadRef = useRef(true);
+
+    const [country, setCountry] = useState('United States');
+    const [state, setState] = useState('');
+    const [city, setCity] = useState('');
+    const [availableCities, setAvailableCities] = useState([]);
 
     useEffect(() => {
         if (initialLoadRef.current) {
@@ -24,8 +40,21 @@ export default function AddressGenerator() {
         }
     }, [generateAddress]);
 
-    const handleCountryCityGenerate = (country, city) => {
-        generateAddressByCountryCity(country, city);
+    useEffect(() => {
+        if (state) {
+            setAvailableCities(usCities[state] || []);
+            setCity('');
+        }
+    }, [state]);
+
+    const handleCountryCityGenerate = async () => {
+        if (country && state && city) {
+            const coordinates = await addressService.getCityCenterCoordinates(country, state, city);
+            if (coordinates) {
+                const newAddress = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
+                saveAddress(newAddress);
+            }
+        }
     };
 
     return (
@@ -38,7 +67,7 @@ export default function AddressGenerator() {
 
                 <Flex mt="4">
                     <Tabs.Content value="ip" style={{ width: '100%' }}>
-                        <AddressInput
+                        <IPInput
                             ipInput={ipInput}
                             setIpInput={setIpInput}
                             onGenerateAddress={generateAddress}
@@ -50,6 +79,15 @@ export default function AddressGenerator() {
                         <CountryCityInput
                             loading={loading}
                             onGenerate={handleCountryCityGenerate}
+                            country={country}
+                            setCountry={setCountry}
+                            state={state}
+                            setState={setState}
+                            city={city}
+                            setCity={setCity}
+                            countries={countries}
+                            usStates={usStates}
+                            availableCities={availableCities}
                         />
                     </Tabs.Content>
                 </Flex>
