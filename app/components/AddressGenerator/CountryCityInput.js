@@ -38,7 +38,7 @@ export function CountryCityInput({ loading, onGenerate }) {
                 disabled={loading || !country}
                 onClick={() => onGenerate(country, city)}
             >
-                <ReloadIcon />
+                <ReloadIcon size="3" />
                 {loading ? '生成中...' : '生成地址'}
             </Button>
         </Flex>

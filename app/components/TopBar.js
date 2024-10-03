@@ -22,10 +22,10 @@ export default function TopBar({ theme, setTheme }) {
         <Box style={topBarStyle}>
             <Flex align="center" gap="4">
                 <Button variant="soft" onClick={toggleTheme} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }}>
-                    {theme === 'light' ? <MoonIcon width="20" height="20" /> : <SunIcon width="20" height="20" />}
+                    {theme === 'light' ? <MoonIcon size="3" /> : <SunIcon size="3" />}
                 </Button>
                 <Link href="https://github.com/GuooGaii/ip-geoaddress-generator" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center' }}>
-                    <FaGithub size={28} color="var(--color-foreground)" />
+                    <FaGithub size={24} color="var(--color-foreground)" />
                 </Link>
             </Flex>
         </Box>

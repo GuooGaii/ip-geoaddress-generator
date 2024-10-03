@@ -64,7 +64,7 @@ export default function AddressGenerator() {
             />
             <Flex justify="center" mt="4">
                 <Button size="3" onClick={() => saveAddress(address)}>
-                    <PlusIcon />
+                    <PlusIcon size="3" />
                     保存地址
                 </Button>
             </Flex>

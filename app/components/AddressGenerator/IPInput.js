@@ -13,7 +13,7 @@ export function AddressInput({ ipInput, setIpInput, onGenerateAddress, loading }
                 style={{ flex: 1 }}
             >
                 <TextField.Slot>
-                    <MagnifyingGlassIcon height="16" width="16" />
+                    <MagnifyingGlassIcon size="3" />
                 </TextField.Slot>
             </TextField.Root>
             <Button
@@ -21,7 +21,7 @@ export function AddressInput({ ipInput, setIpInput, onGenerateAddress, loading }
                 onClick={() => onGenerateAddress(ipInput)}
                 disabled={loading}
             >
-                <ReloadIcon />
+                <ReloadIcon size="3" />
                 {loading ? '生成中...' : '生成地址'}
             </Button>
         </Flex>

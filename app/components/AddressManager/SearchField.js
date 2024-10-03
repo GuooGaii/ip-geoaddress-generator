@@ -12,7 +12,7 @@ export default function SearchField({ searchQuery, setSearchQuery }) {
             style={{ marginBottom: '16px' }}
         >
             <TextField.Slot>
-                <MagnifyingGlassIcon height="16" width="16" />
+                <MagnifyingGlassIcon size="3" />
             </TextField.Slot>
         </TextField.Root>
     );

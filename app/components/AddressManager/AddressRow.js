@@ -13,7 +13,7 @@ export default function AddressRow({ addr, deleteAddress }) {
             </Table.Cell>
             <Table.Cell style={{ width: '20%' }}>
                 <Button variant="soft" color="red" onClick={() => deleteAddress(addr.id)} size="2">
-                    <TrashIcon />
+                    <TrashIcon size="3" />
                     删除
                 </Button>
             </Table.Cell>

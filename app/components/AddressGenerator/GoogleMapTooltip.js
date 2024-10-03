@@ -31,6 +31,7 @@ export default function GoogleMapTooltip({ address }) {
             }
         >
             <GlobeIcon
+                size="3"
                 style={{ cursor: 'pointer', color: 'var(--accent-9)' }}
                 onMouseEnter={() => setShowMap(true)}
                 onMouseLeave={() => setShowMap(false)}

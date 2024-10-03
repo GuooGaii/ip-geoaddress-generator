@@ -20,7 +20,7 @@ export default function ActionButtons({ addressCount, deleteAllAddresses, saveTo
                 color="red"
                 style={buttonStyle}
             >
-                <TrashIcon />
+                <TrashIcon size="3" />
                 删除所有
             </Button>
             <Button
@@ -29,7 +29,7 @@ export default function ActionButtons({ addressCount, deleteAllAddresses, saveTo
                 size="3"
                 style={buttonStyle}
             >
-                <DownloadIcon />
+                <DownloadIcon size="3" />
                 保存为TXT
             </Button>
         </Flex>
