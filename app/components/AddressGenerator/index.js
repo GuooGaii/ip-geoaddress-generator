@@ -7,7 +7,7 @@ import { useAddressGenerator } from 'app/components/AddressGenerator/useAddressG
 import { useTooltip } from 'app/components/AddressGenerator/useTooltip';
 import { IPInput } from 'app/components/AddressGenerator/IPInput';
 import { RegionInput } from 'app/components/AddressGenerator/RegionInput';
-import { AddressTable } from 'app/components/AddressGenerator/AddressTable';
+import { InfoTable } from '@/app/components/AddressGenerator/InfoTable';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { addressService } from 'app/services/addressService';
 
@@ -121,7 +121,7 @@ export default function AddressGenerator() {
             </Tabs.Root>
 
             {error && <Text color="red">{error}</Text>}
-            <AddressTable
+            <InfoTable
                 address={address}
                 copyToClipboard={copyToClipboard}
                 handleTooltip={handleTooltip}

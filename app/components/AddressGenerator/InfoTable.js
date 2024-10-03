@@ -2,9 +2,9 @@ import { Flex, Table, ScrollArea } from '@radix-ui/themes';
 import PropTypes from 'prop-types';
 import GoogleMapTooltip from 'app/components/AddressGenerator/GoogleMapTooltip';
 import { ADDRESS_FIELDS, LABELS } from 'app/constants/addressFields';
-import { CopyableText } from './CopyableText';
+import { CopyableText } from 'app/components/AddressGenerator/CopyableText';
 
-export function AddressTable({ address }) {
+export function InfoTable({ address }) {
     return (
         <ScrollArea style={{ flex: 1, minHeight: 0 }}>
             <Table.Root>
@@ -28,7 +28,7 @@ export function AddressTable({ address }) {
     );
 }
 
-AddressTable.propTypes = {
+InfoTable.propTypes = {
     address: PropTypes.shape({
         address: PropTypes.string,
         city: PropTypes.string,
