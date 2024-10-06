@@ -1,7 +1,7 @@
 'use client';
 
 import { Flex, Text, Button, Tabs } from '@radix-ui/themes';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useAddress } from 'app/contexts/AddressContext';
 import { useAddressGenerator } from 'app/components/AddressGenerator/useAddressGenerator';
 import { useTooltip } from 'app/components/AddressGenerator/useTooltip';
@@ -10,42 +10,36 @@ import { RegionInput } from 'app/components/AddressGenerator/RegionInput';
 import { InfoTable } from '@/app/components/AddressGenerator/InfoTable';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { addressService } from 'app/services/addressService';
-
-const countries = ['United States'];
-const usStates = ['California', 'New York', 'Texas', 'Florida', 'Illinois'];
-const usCities = {
-    California: ['Los Angeles', 'San Francisco', 'San Diego'],
-    'New York': ['New York City', 'Buffalo', 'Albany'],
-    Texas: ['Houston', 'Austin', 'Dallas'],
-    Florida: ['Miami', 'Orlando', 'Tampa'],
-    Illinois: ['Chicago', 'Springfield', 'Peoria']
-};
+import { REGION_DATA, COUNTRIES } from 'app/constants/regionData';
 
 export default function AddressGenerator() {
     const { saveAddress } = useAddress();
     const { address, setAddress, loading, setLoading, error, setError } = useAddressGenerator();
     const { tooltipStates, copyToClipboard, handleTooltip } = useTooltip();
     const [ipInput, setIpInput] = useState('');
-    const initialLoadRef = useRef(true);
 
-    const [country, setCountry] = useState('United States');
+    const [country, setCountry] = useState(COUNTRIES[0]);
     const [state, setState] = useState('');
     const [city, setCity] = useState('');
+    const [availableStates, setAvailableStates] = useState([]);
     const [availableCities, setAvailableCities] = useState([]);
 
     useEffect(() => {
-        if (initialLoadRef.current) {
-            handleGenerate('ip'); // 使用 'ip' 作为默认类型
-            initialLoadRef.current = false;
-        }
-    }, []);
+        setAvailableStates(Object.keys(REGION_DATA[country]));
+        setState('');
+        setCity('');
+    }, [country]);
 
     useEffect(() => {
         if (state) {
-            setAvailableCities(usCities[state] || []);
+            setAvailableCities(REGION_DATA[country][state] || []);
             setCity('');
         }
-    }, [state]);
+    }, [country, state]);
+
+    useEffect(() => {
+        handleGenerate('ip');
+    }, []); // 空依赖数组意味着这个效果只在组件挂载时运行一次
 
     const handleGenerate = async (type) => {
         setLoading(true);
@@ -53,7 +47,8 @@ export default function AddressGenerator() {
         try {
             let coordinates;
             if (type === 'ip') {
-                coordinates = await addressService.getIPCoordinates(ipInput);
+                // 如果是首次加载（ipInput 为空），就不传入 ipInput
+                coordinates = await addressService.getIPCoordinates(ipInput || undefined);
             } else if (type === 'country') {
                 coordinates = await addressService.getCityCenterCoordinates(country, state, city);
             }
@@ -112,8 +107,8 @@ export default function AddressGenerator() {
                             setState={setState}
                             city={city}
                             setCity={setCity}
-                            countries={countries}
-                            usStates={usStates}
+                            countries={COUNTRIES}
+                            availableStates={availableStates}
                             availableCities={availableCities}
                         />
                     </Tabs.Content>
