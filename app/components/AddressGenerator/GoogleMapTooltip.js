@@ -8,9 +8,14 @@ export default function GoogleMapTooltip({ address }) {
 
     const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(
         `${address.address}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`
-    )}&output=embed`;
+    )}`;
 
     const iframeTitle = `谷歌地图 - ${address.address}, ${address.city}`;
+
+    const handleClick = (e) => {
+        e.preventDefault();
+        window.open(mapUrl, '_blank');
+    };
 
     return (
         <Tooltip
@@ -25,7 +30,7 @@ export default function GoogleMapTooltip({ address }) {
                         style={{ border: 0 }}
                         loading="lazy"
                         allowFullScreen
-                        src={mapUrl}
+                        src={`${mapUrl}&output=embed`}
                     />
                 </div>
             }
@@ -35,6 +40,7 @@ export default function GoogleMapTooltip({ address }) {
                 style={{ cursor: 'pointer', color: 'var(--accent-9)' }}
                 onMouseEnter={() => setShowMap(true)}
                 onMouseLeave={() => setShowMap(false)}
+                onClick={handleClick}
             />
         </Tooltip>
     );
