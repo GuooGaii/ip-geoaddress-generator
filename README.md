@@ -1,3 +1,9 @@
+<div align="center">
+
+[简体中文](README.md) | [English](README_EN.md)
+
+</div>
+
 # 基于IP的真实地址生成器 🌍
 
 这是一个基于Web的应用程序，可以根据IP地址生成真实的随机地址信息。它使用多个API来获取位置数据和随机用户信息，为用户提供一个完整的虚拟身份。
@@ -17,7 +23,7 @@ https://ip-geoaddress-generator.pages.dev/
   - 国家
   - 省/州
   - 城市
-  - SSN
+  - SSN（仅美国地区）
 
 ### 地址管理
 - 在Google地图上显示生成的地址
