@@ -1,6 +1,5 @@
-import { Box, Link, Button, Flex } from '@radix-ui/themes';
-import { FaGithub } from 'react-icons/fa';
-import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
+import { Box, Link, Button, Flex, DropdownMenu } from '@radix-ui/themes';
+import { MoonIcon, SunIcon, GlobeIcon, GitHubLogoIcon } from '@radix-ui/react-icons';
 import PropTypes from 'prop-types';
 
 export default function TopBar({ theme, setTheme }) {
@@ -24,8 +23,21 @@ export default function TopBar({ theme, setTheme }) {
                 <Button variant="soft" onClick={toggleTheme} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }}>
                     {theme === 'light' ? <MoonIcon size="3" /> : <SunIcon size="3" />}
                 </Button>
-                <Link href="https://github.com/GuooGaii/ip-geoaddress-generator" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center' }}>
-                    <FaGithub size={24} color="var(--color-foreground)" />
+                <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                        <Button variant="soft" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }}>
+                            <GlobeIcon size="3" />
+                        </Button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content align="center" sideOffset={5}>
+                        <DropdownMenu.Item>中文</DropdownMenu.Item>
+                        <DropdownMenu.Item>English</DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                </DropdownMenu.Root>
+                <Link href="https://github.com/GuooGaii/ip-geoaddress-generator" target="_blank" rel="noopener noreferrer">
+                    <Button variant="soft" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }}>
+                        <GitHubLogoIcon size="3" />
+                    </Button>
                 </Link>
             </Flex>
         </Box>
