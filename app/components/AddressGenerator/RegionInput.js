@@ -1,25 +1,38 @@
 import { Flex, Select, Button } from '@radix-ui/themes';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import { REGION_DATA, COUNTRIES } from 'app/constants/regionData';
 
-export function RegionInput({
-    loading,
-    onGenerate,
-    country,
-    setCountry,
-    state,
-    setState,
-    city,
-    setCity,
-    countries,
-    availableStates,
-    availableCities
-}) {
+export function RegionInput({ loading, onGenerate }) {
+    const [country, setCountry] = useState(COUNTRIES[0]);
+    const [state, setState] = useState('');
+    const [city, setCity] = useState('');
+    const [availableStates, setAvailableStates] = useState([]);
+    const [availableCities, setAvailableCities] = useState([]);
+
+    useEffect(() => {
+        setAvailableStates(Object.keys(REGION_DATA[country]));
+        setState('');
+        setCity('');
+    }, [country]);
+
+    useEffect(() => {
+        if (state) {
+            setAvailableCities(REGION_DATA[country][state] || []);
+            setCity('');
+        }
+    }, [country, state]);
+
+    const handleGenerate = () => {
+        onGenerate({ country, state, city });
+    };
+
     return (
         <Flex direction="column" gap="2">
             <Select.Root value={country} onValueChange={setCountry}>
                 <Select.Trigger placeholder="选择国家" />
                 <Select.Content position="popper">
-                    {countries.map((c) => (
+                    {COUNTRIES.map((c) => (
                         <Select.Item key={c} value={c}>
                             {c}
                         </Select.Item>
@@ -49,7 +62,7 @@ export function RegionInput({
                 </Select.Content>
             </Select.Root>
 
-            <Button onClick={onGenerate} disabled={loading || !country || !state || !city}>
+            <Button onClick={handleGenerate} disabled={loading || !country || !state || !city}>
                 生成地址
             </Button>
         </Flex>
@@ -59,13 +72,4 @@ export function RegionInput({
 RegionInput.propTypes = {
     loading: PropTypes.bool.isRequired,
     onGenerate: PropTypes.func.isRequired,
-    country: PropTypes.string.isRequired,
-    setCountry: PropTypes.func.isRequired,
-    state: PropTypes.string.isRequired,
-    setState: PropTypes.func.isRequired,
-    city: PropTypes.string.isRequired,
-    setCity: PropTypes.func.isRequired,
-    countries: PropTypes.arrayOf(PropTypes.string).isRequired,
-    availableStates: PropTypes.arrayOf(PropTypes.string).isRequired,
-    availableCities: PropTypes.arrayOf(PropTypes.string).isRequired,
 };

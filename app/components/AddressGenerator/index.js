@@ -12,31 +12,25 @@ import { PlusIcon } from '@radix-ui/react-icons';
 import { addressService } from 'app/services/addressService';
 import { REGION_DATA, COUNTRIES } from 'app/constants/regionData';
 
+const formatAddressData = (addressData, userData) => ({
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    address: `${addressData.house_number || ''} ${addressData.road || ''}`.trim() || 'N/A',
+    city: addressData.city || addressData.town || 'N/A',
+    state: addressData.state || 'N/A',
+    zipCode: addressData.postcode || 'N/A',
+    country: addressData.country || 'N/A',
+    phone: userData.phone,
+    ssn: userData.ssn
+});
+
 export default function AddressGenerator() {
     const { saveAddress } = useAddress();
     const { address, setAddress, loading, setLoading, error, setError } = useAddressGenerator();
     const { tooltipStates, copyToClipboard, handleTooltip } = useTooltip();
 
-    const [country, setCountry] = useState(COUNTRIES[0]);
-    const [state, setState] = useState('');
-    const [city, setCity] = useState('');
-    const [availableStates, setAvailableStates] = useState([]);
-    const [availableCities, setAvailableCities] = useState([]);
     const [batchCount, setBatchCount] = useState(1);
     const [batchLoading, setBatchLoading] = useState(false);
-
-    useEffect(() => {
-        setAvailableStates(Object.keys(REGION_DATA[country]));
-        setState('');
-        setCity('');
-    }, [country]);
-
-    useEffect(() => {
-        if (state) {
-            setAvailableCities(REGION_DATA[country][state] || []);
-            setCity('');
-        }
-    }, [country, state]);
 
     useEffect(() => {
         const initialGenerate = async () => {
@@ -46,17 +40,7 @@ export default function AddressGenerator() {
                 if (coordinates) {
                     const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
                     const userData = await addressService.getRandomUserData(addressData.country);
-                    setAddress({
-                        firstName: userData.firstName,
-                        lastName: userData.lastName,
-                        address: `${addressData.house_number || ''} ${addressData.road || ''}`.trim() || 'N/A',
-                        city: addressData.city || addressData.town || 'N/A',
-                        state: addressData.state || 'N/A',
-                        zipCode: addressData.postcode || 'N/A',
-                        country: addressData.country || 'N/A',
-                        phone: userData.phone,
-                        ssn: userData.ssn
-                    });
+                    setAddress(formatAddressData(addressData, userData));
                 }
             } catch (error) {
                 console.error("初始地址生成出错:", error);
@@ -79,19 +63,7 @@ export default function AddressGenerator() {
                     const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
                     const userData = await addressService.getRandomUserData(addressData.country);
 
-                    const newAddress = {
-                        firstName: userData.firstName,
-                        lastName: userData.lastName,
-                        address: `${addressData.house_number || ''} ${addressData.road || ''}`.trim() || 'N/A',
-                        city: addressData.city || addressData.town || 'N/A',
-                        state: addressData.state || 'N/A',
-                        zipCode: addressData.postcode || 'N/A',
-                        country: addressData.country || 'N/A',
-                        phone: userData.phone,
-                        ssn: userData.ssn
-                    };
-
-                    await saveAddress(newAddress);
+                    await saveAddress(formatAddressData(addressData, userData));
                 }
             }
         } catch (error) {
@@ -99,6 +71,41 @@ export default function AddressGenerator() {
             setError('批量生成地址时出错，请稍后再试');
         } finally {
             setBatchLoading(false);
+        }
+    };
+
+    const handleIPGenerate = async (ipInput) => {
+        setLoading(true);
+        setError('');
+        try {
+            const coordinates = await addressService.getIPCoordinates(ipInput || undefined);
+            if (coordinates) {
+                const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
+                const userData = await addressService.getRandomUserData(addressData.country);
+
+                setAddress(formatAddressData(addressData, userData));
+            }
+        } catch (error) {
+            console.error("生成地址时出错:", error);
+            setError('生成地址时出错，请稍后再试');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRegionGenerate = async ({ country, state, city }) => {
+        setLoading(true);
+        setError('');
+        try {
+            const coordinates = await addressService.getCityCenterCoordinates(country, state, city);
+            const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
+            const userData = await addressService.getRandomUserData(country);
+            setAddress(formatAddressData(addressData, userData));
+        } catch (error) {
+            console.error("生成地址时出错:", error);
+            setError('生成地址时出错，请稍后再试');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -133,10 +140,8 @@ export default function AddressGenerator() {
                     <Tabs.Content value="ip" style={{ width: '100%' }}>
                         <Flex direction="column" gap="4">
                             <IPInput
-                                onAddressGenerated={setAddress}
+                                onGenerate={handleIPGenerate}
                                 loading={loading}
-                                setLoading={setLoading}
-                                setError={setError}
                             />
                             {renderAddressInfo()}
                         </Flex>
@@ -146,16 +151,7 @@ export default function AddressGenerator() {
                         <Flex direction="column" gap="4">
                             <RegionInput
                                 loading={loading}
-                                onGenerate={() => handleGenerate('country')}
-                                country={country}
-                                setCountry={setCountry}
-                                state={state}
-                                setState={setState}
-                                city={city}
-                                setCity={setCity}
-                                countries={COUNTRIES}
-                                availableStates={availableStates}
-                                availableCities={availableCities}
+                                onGenerate={handleRegionGenerate}
                             />
                             {renderAddressInfo()}
                         </Flex>
