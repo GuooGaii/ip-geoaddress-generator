@@ -16,7 +16,6 @@ export default function AddressGenerator() {
     const { saveAddress } = useAddress();
     const { address, setAddress, loading, setLoading, error, setError } = useAddressGenerator();
     const { tooltipStates, copyToClipboard, handleTooltip } = useTooltip();
-    const [ipInput, setIpInput] = useState('');
 
     const [country, setCountry] = useState(COUNTRIES[0]);
     const [state, setState] = useState('');
@@ -40,46 +39,34 @@ export default function AddressGenerator() {
     }, [country, state]);
 
     useEffect(() => {
-        handleGenerate('ip');
-    }, []); // 空依赖数组意味着这个效果只在组件挂载时运行一次
-
-    const handleGenerate = async (type) => {
-        setLoading(true);
-        setError('');
-        try {
-            let coordinates;
-            if (type === 'ip') {
-                // 如果是首次加载（ipInput 为空），就不传入 ipInput
-                coordinates = await addressService.getIPCoordinates(ipInput || undefined);
-            } else if (type === 'country') {
-                coordinates = await addressService.getCityCenterCoordinates(country, state, city);
+        const initialGenerate = async () => {
+            setLoading(true);
+            try {
+                const coordinates = await addressService.getIPCoordinates();
+                if (coordinates) {
+                    const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
+                    const userData = await addressService.getRandomUserData(addressData.country);
+                    setAddress({
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        address: `${addressData.house_number || ''} ${addressData.road || ''}`.trim() || 'N/A',
+                        city: addressData.city || addressData.town || 'N/A',
+                        state: addressData.state || 'N/A',
+                        zipCode: addressData.postcode || 'N/A',
+                        country: addressData.country || 'N/A',
+                        phone: userData.phone,
+                        ssn: userData.ssn
+                    });
+                }
+            } catch (error) {
+                console.error("初始地址生成出错:", error);
+                setError('生成地址时出错，请稍后再试');
+            } finally {
+                setLoading(false);
             }
-
-            if (coordinates) {
-                const addressData = await addressService.getRandomAddress(coordinates.latitude, coordinates.longitude);
-                const userData = await addressService.getRandomUserData(addressData.country);
-
-                const newAddress = {
-                    firstName: userData.firstName,
-                    lastName: userData.lastName,
-                    address: `${addressData.house_number || ''} ${addressData.road || ''}`.trim() || 'N/A',
-                    city: addressData.city || addressData.town || 'N/A',
-                    state: addressData.state || 'N/A',
-                    zipCode: addressData.postcode || 'N/A',
-                    country: addressData.country || 'N/A',
-                    phone: userData.phone,
-                    ssn: userData.ssn
-                };
-
-                setAddress(newAddress);
-            }
-        } catch (error) {
-            console.error("生成地址时出错:", error);
-            setError('生成地址时出错，请稍后再试');
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
+        initialGenerate();
+    }, []);
 
     const handleBatchGenerate = async () => {
         setBatchLoading(true);
@@ -146,10 +133,10 @@ export default function AddressGenerator() {
                     <Tabs.Content value="ip" style={{ width: '100%' }}>
                         <Flex direction="column" gap="4">
                             <IPInput
-                                ipInput={ipInput}
-                                setIpInput={setIpInput}
-                                onGenerateAddress={() => handleGenerate('ip')}
+                                onAddressGenerated={setAddress}
                                 loading={loading}
+                                setLoading={setLoading}
+                                setError={setError}
                             />
                             {renderAddressInfo()}
                         </Flex>
