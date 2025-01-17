@@ -306,7 +306,7 @@ export default function Home() {
         var(--gray-a3) 0, 
         var(--gray-a3) 1px, 
         transparent 1px, 
-        transparent 1rem
+        transparent 2.5vmin
       )
     `,
   };
