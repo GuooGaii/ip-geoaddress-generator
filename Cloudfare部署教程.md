@@ -18,7 +18,6 @@
 2. 点击 "开始设置"
 3. 在项目配置页面:
    - 框架预设: 选择 `Next.js`（**注意：不要选择 Next.js Static HTML Export**）
-   - 构建命令: `pnpm dlx @cloudflare/next-on-pages@1`
 
 > 提示：首次部署可能会出现错误提示,这是正常现象。按照步骤 2.3 启用 Node.js 兼容性并重新部署即可解决。
 
