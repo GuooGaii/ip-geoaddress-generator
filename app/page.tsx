@@ -32,8 +32,8 @@ import { UserInfo } from "./components/UserInfo";
 import { AddressInfo } from "./components/AddressInfo";
 import { AddressSelector } from "./components/AddressSelector";
 
-let idCounter = 0;
-const generateId = () => `history-${++idCounter}`;
+const generateId = () =>
+  `history-${Date.now()}-${Math.random().toString(36).substring(2)}`;
 
 interface UseAddressDataReturn {
   ip: string;
@@ -165,14 +165,21 @@ export default function Home() {
   useEffect(() => {
     const savedHistory = localStorage.getItem("addressHistory");
     if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-      // 更新计数器以避免 ID 冲突
-      const maxId = Math.max(
-        ...JSON.parse(savedHistory).map((record: HistoryRecord) =>
-          parseInt(record.id.split("-")[1] || "0")
-        )
-      );
-      idCounter = maxId;
+      try {
+        const parsedHistory = JSON.parse(savedHistory);
+        // 确保所有记录都有有效的 id
+        const validHistory = parsedHistory.map((record: HistoryRecord) => ({
+          ...record,
+          id:
+            record.id && record.id.startsWith("history-")
+              ? record.id
+              : generateId(),
+        }));
+        setHistory(validHistory);
+      } catch (e) {
+        console.error("Failed to parse history:", e);
+        setHistory([]);
+      }
     }
   }, []);
 
@@ -181,14 +188,24 @@ export default function Home() {
     const initializeData = async () => {
       const result = await generateAddressData();
       if (result) {
+        const timestamp = Date.now();
         const newRecord: HistoryRecord = {
-          id: generateId(),
+          id: `history-${timestamp}-${Math.random().toString(36).substring(2)}`,
           user: result.user,
           address: result.address,
           ip: result.ip,
-          timestamp: new Date().getTime(), // 这个时间戳只用于显示，不影响渲染
+          timestamp: timestamp,
         };
-        setHistory((prev) => [newRecord, ...prev.slice(0, 19)]);
+        setHistory((prev) => {
+          // 检查是否有重复的 id
+          const isDuplicate = prev.some((record) => record.id === newRecord.id);
+          if (isDuplicate) {
+            newRecord.id = `history-${timestamp}-${Math.random()
+              .toString(36)
+              .substring(2)}`;
+          }
+          return [newRecord, ...prev.slice(0, 19)];
+        });
         setSelectedHistory(newRecord.id);
       }
     };
@@ -301,14 +318,27 @@ export default function Home() {
   };
 
   const backgroundStyle = {
-    background: `
-      repeating-linear-gradient(45deg, 
-        var(--gray-a3) 0, 
-        var(--gray-a3) 1px, 
-        transparent 1px, 
-        transparent 2.5vmin
-      )
-    `,
+    backgroundImage:
+      theme === "dark"
+        ? `linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0) 49%,
+          rgba(255, 255, 255, 0.05) 49%,
+          rgba(255, 255, 255, 0.05) 51%,
+          rgba(255, 255, 255, 0) 51%,
+          rgba(255, 255, 255, 0) 100%
+        )`
+        : `linear-gradient(
+          45deg,
+          rgba(0, 0, 0, 0) 0%,
+          rgba(0, 0, 0, 0) 49%,
+          rgba(0, 0, 0, 0.08) 49%,
+          rgba(0, 0, 0, 0.08) 51%,
+          rgba(0, 0, 0, 0) 51%,
+          rgba(0, 0, 0, 0) 100%
+        )`,
+    backgroundSize: "30px 30px",
   };
 
   return (
