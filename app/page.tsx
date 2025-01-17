@@ -302,7 +302,12 @@ export default function Home() {
 
   const backgroundStyle = {
     background: `
-      repeating-linear-gradient(45deg, var(--gray-a3) 0, var(--gray-a3) 1px, transparent 1px, transparent 20px)
+      repeating-linear-gradient(45deg, 
+        var(--gray-a3) 0, 
+        var(--gray-a3) 1px, 
+        transparent 1px, 
+        transparent 1rem
+      )
     `,
   };
 
