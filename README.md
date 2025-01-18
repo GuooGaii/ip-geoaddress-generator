@@ -76,6 +76,7 @@ https://ip-geoaddress-generator.pages.dev/
 ### 致谢
 
 感谢LinuxDo论坛的[F-droid](https://linux.do/u/F-droid/summary)提供的Docker部署教程以及镜像
+
 感谢LinuxDo论坛的[HirasawaYui](https://linux.do/u/HirasawaYui/summary)提供的GitHub Action
 
 ## 许可证
