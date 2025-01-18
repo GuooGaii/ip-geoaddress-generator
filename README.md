@@ -73,6 +73,11 @@ https://ip-geoaddress-generator.pages.dev/
 
 欢迎提交问题和拉取请求。对于重大更改，请先开issue讨论您想要更改的内容。
 
+### 致谢
+
+感谢LinuxDo论坛的[F-droid](https://linux.do/u/F-droid/summary)提供的Docker部署教程以及镜像
+感谢LinuxDo论坛的[HirasawaYui](https://linux.do/u/HirasawaYui/summary)提供的GitHub Action
+
 ## 许可证
 
 [MIT](https://choosealicense.com/licenses/mit/)

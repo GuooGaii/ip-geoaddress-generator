@@ -38,9 +38,9 @@
 2. 点击 "Sync fork" 按钮,参考GitHub官方教程 [Syncing a fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork)
 3. 选择 "Update branch" 即可
 
-如果你想手动保持与原仓库同步,可以:
+在此感谢LinuxDo论坛的[HirasawaYui](https://linux.do/u/HirasawaYui/summary)提供的GitHub Action
 
-**注意!以下步骤未经验证,代码为ChatGPT生成的,不保证可用!若可以成功同步,请与我联系**
+如果你想自动保持与原仓库同步,可以:
 
 1. 在GitHub Action中新建工作流
 2. 创建sync.yml文件:
@@ -62,11 +62,21 @@ jobs:
       with:
         ref: main
 
+    - name: Set Git User Info
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
     - name: Add Upstream
       run: |
         git remote add upstream https://github.com/GuooGaii/ip-geoaddress-generator
         git fetch upstream
-        git merge upstream/main --no-edit
-        git push origin main
 
+    - name: Merge Upstream Changes
+      run: |
+        git merge upstream/main --allow-unrelated-histories --no-edit
+
+    - name: Push Changes to Fork
+      run: |
+        git push origin main
 ```
