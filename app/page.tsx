@@ -84,17 +84,24 @@ const useAddressData = (): UseAddressDataReturn => {
         service.getRandomUser("US"),
       ]);
 
+      // 添加经纬度到地址信息中
+      const addressWithCoords = {
+        ...addressData,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      };
+
       const newUser = userResult.results[0];
 
       // 更新状态
       setIp(newIp);
-      setAddress(addressData);
+      setAddress(addressWithCoords);
       setUser(newUser);
 
       // 返回生成的数据
       return {
         ip: newIp,
-        address: addressData,
+        address: addressWithCoords,
         user: newUser,
       };
     } catch (err) {
@@ -105,11 +112,6 @@ const useAddressData = (): UseAddressDataReturn => {
       setLoading(false);
     }
   }, []);
-
-  // 初始化加载
-  useEffect(() => {
-    generateAddressData();
-  }, [generateAddressData]);
 
   return {
     ip,
@@ -251,14 +253,20 @@ export default function Home() {
             service.getRandomUser("US"),
           ]);
 
+          const addressWithCoords = {
+            ...addressData,
+            latitude: Number(coords.lat),
+            longitude: Number(coords.lon),
+          };
+
           const newUser = userResult.results[0];
-          setAddress(addressData);
+          setAddress(addressWithCoords);
           setUser(newUser);
 
           const newRecord: HistoryRecord = {
             id: generateId(),
             user: newUser,
-            address: addressData,
+            address: addressWithCoords,
             ip: inputIp,
             timestamp: new Date().getTime(),
           };
@@ -311,9 +319,26 @@ export default function Home() {
     setSelectedHistory(record.id);
     setUser(record.user);
     setAddress(record.address);
-    // 只有当记录的 ip 是真实 IP 地址时才设置
     if (!record.ip.includes("|")) {
       setIp(record.ip);
+      // 如果地址中没有经纬度信息，则重新获取
+      if (!record.address.latitude || !record.address.longitude) {
+        const fetchCoordinates = async () => {
+          try {
+            const service = new WFDService();
+            const coords = await service.getIPCoordinates(record.ip);
+            const updatedAddress: Address = {
+              ...record.address,
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+            };
+            setAddress(updatedAddress);
+          } catch (error) {
+            console.error("获取坐标失败:", error);
+          }
+        };
+        fetchCoordinates();
+      }
     }
   };
 

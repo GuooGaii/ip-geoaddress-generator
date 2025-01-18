@@ -16,6 +16,8 @@ export interface Address {
   state?: string;
   postcode?: string;
   country?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface HistoryRecord {

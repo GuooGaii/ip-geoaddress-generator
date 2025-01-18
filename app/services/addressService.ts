@@ -10,9 +10,16 @@ export class WFDService {
    * @returns {Promise<{ ip: string }>} 包含IP地址的对象
    */
   async getCurrentIP(): Promise<{ ip: string }> {
-    const url = "https://api.ipify.org?format=json";
-    const response = await axios.get(url);
-    return response.data;
+    try {
+      const url = "https://api.ipify.org?format=json";
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("获取当前IP地址失败:", error.message);
+      }
+      throw error;
+    }
   }
 
   /**
@@ -23,10 +30,17 @@ export class WFDService {
   async getIPCoordinates(
     ip: string
   ): Promise<{ latitude: number; longitude: number }> {
-    const url = `https://ipapi.co/${ip}/json/`;
-    const response = await axios.get(url);
-    const { latitude, longitude } = response.data;
-    return { latitude, longitude };
+    try {
+      const url = `https://ipapi.co/${ip}/json/`;
+      const response = await axios.get(url);
+      const { latitude, longitude } = response.data;
+      return { latitude, longitude };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`获取IP(${ip})坐标失败:`, error.message);
+      }
+      throw error;
+    }
   }
 
   /**
@@ -35,9 +49,16 @@ export class WFDService {
    * @returns {Promise<{ results: User[] }>} 包含用户信息的对象
    */
   async getRandomUser(country: string) {
-    const url = `https://randomuser.me/api/?nat=${country}&inc=name,phone,id`;
-    const response = await axios.get<{ results: User[] }>(url);
-    return response.data;
+    try {
+      const url = `https://randomuser.me/api/?nat=${country}&inc=name,phone,id`;
+      const response = await axios.get<{ results: User[] }>(url);
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(`获取随机用户信息失败(国家: ${country}):`, error.message);
+      }
+      throw error;
+    }
   }
 
   /**
@@ -48,10 +69,20 @@ export class WFDService {
    * @returns {Promise<{ lat: number, lon: number }>} 包含坐标对象
    */
   async getCoordinates(country: string, state: string, city: string) {
-    const url = `https://nominatim.openstreetmap.org/search?q=${city},${state},${country}&format=json&limit=1`;
-    const response = await axios.get(url);
-    const { lat, lon } = response.data[0];
-    return { lat, lon };
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${city},${state},${country}&format=json&limit=1`;
+      const response = await axios.get(url);
+      const { lat, lon } = response.data[0];
+      return { lat, lon };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          `获取地理坐标失败(${city}, ${state}, ${country}):`,
+          error.message
+        );
+      }
+      throw error;
+    }
   }
 
   /**
@@ -80,12 +111,21 @@ export class WFDService {
     latitude: number,
     longitude: number
   ): Promise<Address> {
-    // 添加随机偏移
-    const { latitude: randomLat, longitude: randomLon } =
-      this.generateRandomOffset(latitude, longitude);
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${randomLat}&lon=${randomLon}&format=json&accept-language=en`;
-    const response = await axios.get(url);
-    return response.data.address;
+    try {
+      const { latitude: randomLat, longitude: randomLon } =
+        this.generateRandomOffset(latitude, longitude);
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${randomLat}&lon=${randomLon}&format=json&accept-language=en`;
+      const response = await axios.get(url);
+      return response.data.address;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          `获取随机地址失败(坐标: ${latitude}, ${longitude}):`,
+          error.message
+        );
+      }
+      throw error;
+    }
   }
 
   /**
@@ -114,5 +154,15 @@ export class WFDService {
   getExportFileName(format: ExportFormat = "json"): string {
     const date = new Date().toISOString().split("T")[0];
     return `address-history-${date}.${format}`;
+  }
+
+  /**
+   * 生成谷歌地图链接
+   * @param latitude 纬度
+   * @param longitude 经度
+   * @returns {string} 谷歌地图链接
+   */
+  getGoogleMapUrl(latitude: number, longitude: number): string {
+    return `https://www.google.com/maps?q=${latitude},${longitude}`;
   }
 }

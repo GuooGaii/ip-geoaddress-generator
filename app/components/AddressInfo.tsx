@@ -1,8 +1,18 @@
 "use client";
 
-import { DataList, Text, Skeleton, IconButton, Flex } from "@radix-ui/themes";
+import {
+  DataList,
+  Text,
+  Skeleton,
+  IconButton,
+  Flex,
+  HoverCard,
+  Box,
+} from "@radix-ui/themes";
 import { Address } from "../types";
 import { CopyStatus } from "./CopyStatus";
+import { GlobeIcon } from "@radix-ui/react-icons";
+import { WFDService } from "../services/addressService";
 
 interface AddressInfoProps {
   address: Address | null;
@@ -17,6 +27,12 @@ export function AddressInfo({
   copiedId,
   onCopy,
 }: Readonly<AddressInfoProps>) {
+  const service = new WFDService();
+  const mapUrl =
+    address?.latitude && address?.longitude
+      ? service.getGoogleMapUrl(address.latitude, address.longitude)
+      : null;
+
   if (loading) {
     return (
       <DataList.Root>
@@ -81,7 +97,53 @@ export function AddressInfo({
       {address.road && (
         <DataList.Item>
           <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-            街道
+            <Flex align="center" gap="2">
+              街道
+              {mapUrl && address.latitude && address.longitude && (
+                <HoverCard.Root>
+                  <HoverCard.Trigger>
+                    <IconButton
+                      size="1"
+                      variant="ghost"
+                      className="cursor-pointer"
+                      onClick={() => window.open(mapUrl, "_blank")}
+                    >
+                      <GlobeIcon />
+                    </IconButton>
+                  </HoverCard.Trigger>
+                  <HoverCard.Content
+                    style={{ padding: 0 }}
+                    align="center"
+                    side="top"
+                    sideOffset={5}
+                  >
+                    <Box
+                      style={{
+                        width: "500px",
+                        height: "300px",
+                        position: "relative",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => window.open(mapUrl, "_blank")}
+                    >
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+                          address.longitude - 0.02
+                        }%2C${address.latitude - 0.02}%2C${
+                          address.longitude + 0.02
+                        }%2C${address.latitude + 0.02}&layer=mapnik&marker=${
+                          address.latitude
+                        }%2C${address.longitude}`}
+                      />
+                    </Box>
+                  </HoverCard.Content>
+                </HoverCard.Root>
+              )}
+            </Flex>
           </DataList.Label>
           <DataList.Value>
             <IconButton
