@@ -132,9 +132,22 @@ const copyToClipboard = async (
   id: string
 ) => {
   try {
-    await navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(""), 1000); // 1秒后重置状态
+    if (typeof window !== "undefined") {
+      try {
+        await window.navigator.clipboard.writeText(text);
+      } catch {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.cssText =
+          "position:fixed;pointer-events:none;opacity:0;";
+        document.body.appendChild(textArea);
+        textArea.select();
+        textArea.setSelectionRange(0, 99999);
+        document.body.removeChild(textArea);
+      }
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(""), 1000);
+    }
   } catch (err) {
     console.error("复制失败:", err);
   }
@@ -419,9 +432,13 @@ export default function Home() {
           )}
         </Flex>
 
-        <Flex gap="4" style={{ width: "100%", maxWidth: "900px" }}>
+        <Flex
+          gap="4"
+          style={{ width: "100%", maxWidth: "900px" }}
+          className="flex flex-col md:flex-row"
+        >
           {/* 左侧卡片 */}
-          <Card size="4" style={{ flex: 2, display: "flex" }}>
+          <Card size="4" style={{ flex: 2 }} className="hidden md:flex">
             <Flex direction="column" gap="3" style={{ flex: 1 }}>
               <Box>
                 <Flex gap="3">
@@ -585,7 +602,7 @@ export default function Home() {
           </Card>
 
           {/* 右侧卡片 */}
-          <Card size="4" style={{ flex: 1 }}>
+          <Card size="4" style={{ flex: 1 }} className="flex-1 w-full">
             <Flex direction="column" gap="4">
               {error && <Text color="red">{error}</Text>}
               <Box style={{ width: "100%" }}>
