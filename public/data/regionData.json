@@ -1,4 +1,4 @@
-export const REGION_DATA = {
+{
     "United States": {
         "New York": [
             "New York",
@@ -725,7 +725,7 @@ export const REGION_DATA = {
             "Mead Valley",
             "Stevenson Ranch",
             "Imperial",
-            "La Ca\u00f1ada Flintridge",
+            "La Cañada Flintridge",
             "Oroville",
             "East Hemet",
             "Shafter",
@@ -2984,7 +2984,7 @@ export const REGION_DATA = {
             "Cimarron Hills",
             "Fort Carson",
             "Johnstown",
-            "Ca\u00f1on City",
+            "Cañon City",
             "Firestone",
             "Welby",
             "Greenwood Village",
@@ -4581,7 +4581,7 @@ export const REGION_DATA = {
             "Portales",
             "Lovington",
             "North Valley",
-            "Espa\u00f1ola",
+            "Española",
             "Silver City",
             "Bernalillo",
             "Grants",
@@ -5428,5 +5428,3 @@ export const REGION_DATA = {
         ]
     }
 }
-
-export const COUNTRIES = Object.keys(REGION_DATA);

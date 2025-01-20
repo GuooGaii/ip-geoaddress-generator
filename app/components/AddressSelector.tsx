@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Flex, Select, Button } from "@radix-ui/themes";
 import * as Popover from "@radix-ui/react-popover";
-import { REGION_DATA } from "@/public/regionData";
 import styles from "./AddressSelector.module.css";
 
 type RegionData = {
@@ -24,6 +23,27 @@ export function AddressSelector({
   const [city, setCity] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(false);
+  const [regionData, setRegionData] = useState<RegionData>({
+    "United States": {}, // 提供初始值
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 加载地理数据
+  useEffect(() => {
+    const loadRegionData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/data/regionData.json");
+        const data = await response.json();
+        setRegionData(data);
+      } catch (error) {
+        console.error("加载地理数据失败:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadRegionData();
+  }, []);
 
   useEffect(() => {
     setState("");
@@ -40,8 +60,6 @@ export function AddressSelector({
       setOpen(false);
     }
   };
-
-  const regionData = REGION_DATA as RegionData;
 
   // 延迟关闭 Popover，以便在移出时有时间移动到 Popover 内容上
   useEffect(() => {
@@ -92,10 +110,13 @@ export function AddressSelector({
             </Select.Root>
 
             <Select.Root value={state} onValueChange={setState}>
-              <Select.Trigger placeholder="选择州" />
+              <Select.Trigger
+                placeholder={isLoading ? "加载中..." : "选择州"}
+              />
               <Select.Content>
                 {country &&
-                  Object.keys(regionData[country]).map((stateName) => (
+                  regionData[country] &&
+                  Object.keys(regionData[country] || {}).map((stateName) => (
                     <Select.Item key={stateName} value={stateName}>
                       {stateName}
                     </Select.Item>
@@ -104,11 +125,13 @@ export function AddressSelector({
             </Select.Root>
 
             <Select.Root value={city} onValueChange={setCity}>
-              <Select.Trigger placeholder="选择城市" />
+              <Select.Trigger
+                placeholder={isLoading ? "加载中..." : "选择城市"}
+              />
               <Select.Content>
                 {country &&
                   state &&
-                  regionData[country][state].map((cityName, index) => (
+                  regionData[country]?.[state]?.map((cityName, index) => (
                     <Select.Item
                       key={`${state}-${cityName}-${index}`}
                       value={cityName}
@@ -121,9 +144,9 @@ export function AddressSelector({
 
             <Button
               onClick={handleConfirm}
-              disabled={!country || !state || !city}
+              disabled={!country || !state || !city || isLoading}
             >
-              确认
+              {isLoading ? "加载中..." : "确认"}
             </Button>
           </Flex>
         </Box>
