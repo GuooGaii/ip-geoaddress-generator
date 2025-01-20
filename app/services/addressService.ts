@@ -158,11 +158,20 @@ export class WFDService {
 
   /**
    * 生成谷歌地图链接
-   * @param latitude 纬度
-   * @param longitude 经度
+   * @param address 地址对象
    * @returns {string} 谷歌地图链接
    */
-  getGoogleMapUrl(latitude: number, longitude: number): string {
-    return `https://www.google.com/maps?q=${latitude},${longitude}`;
+  getGoogleMapUrl(address: Address): string {
+    const addressString = [
+      address.road,
+      address.city,
+      address.state,
+      address.country,
+    ]
+      .filter(Boolean)
+      .join(", ");
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      addressString
+    )}`;
   }
 }

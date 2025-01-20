@@ -28,10 +28,7 @@ export function AddressInfo({
   onCopy,
 }: Readonly<AddressInfoProps>) {
   const service = new WFDService();
-  const mapUrl =
-    address?.latitude && address?.longitude
-      ? service.getGoogleMapUrl(address.latitude, address.longitude)
-      : null;
+  const mapUrl = address ? service.getGoogleMapUrl(address) : null;
 
   if (loading) {
     return (
@@ -99,7 +96,7 @@ export function AddressInfo({
           <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
             <Flex align="center" gap="2">
               街道
-              {mapUrl && address.latitude && address.longitude && (
+              {mapUrl && (
                 <HoverCard.Root>
                   <HoverCard.Trigger>
                     <IconButton
@@ -112,17 +109,28 @@ export function AddressInfo({
                     </IconButton>
                   </HoverCard.Trigger>
                   <HoverCard.Content
-                    style={{ padding: 0 }}
-                    align="center"
+                    style={{
+                      padding: "10px",
+                      overflow: "hidden",
+                      backgroundColor: "var(--gray-1)",
+                      border: "1px solid var(--gray-6)",
+                      borderRadius: "var(--radius-3)",
+                      maxWidth: "500px",
+                      width: "500px",
+                    }}
+                    align="start"
                     side="top"
                     sideOffset={5}
+                    avoidCollisions={true}
                   >
                     <Box
                       style={{
-                        width: "500px",
-                        height: "300px",
+                        width: "100%",
+                        height: "320px",
                         position: "relative",
                         cursor: "pointer",
+                        overflow: "hidden",
+                        borderRadius: "var(--radius-3)",
                       }}
                       onClick={() => window.open(mapUrl, "_blank")}
                     >
@@ -131,13 +139,16 @@ export function AddressInfo({
                         height="100%"
                         style={{ border: 0 }}
                         loading="lazy"
-                        src={`https://www.openstreetmap.org/export/embed.html?bbox=${
-                          address.longitude - 0.02
-                        }%2C${address.latitude - 0.02}%2C${
-                          address.longitude + 0.02
-                        }%2C${address.latitude + 0.02}&layer=mapnik&marker=${
-                          address.latitude
-                        }%2C${address.longitude}`}
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                          [
+                            address.road,
+                            address.city,
+                            address.state,
+                            address.country,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")
+                        )}&output=embed&z=16`}
                       />
                     </Box>
                   </HoverCard.Content>
