@@ -116,11 +116,13 @@ export function AddressSelector({
               <Select.Content>
                 {country &&
                   regionData[country] &&
-                  Object.keys(regionData[country] || {}).map((stateName) => (
-                    <Select.Item key={stateName} value={stateName}>
-                      {stateName}
-                    </Select.Item>
-                  ))}
+                  Object.keys(regionData[country] || {})
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((stateName) => (
+                      <Select.Item key={stateName} value={stateName}>
+                        {stateName}
+                      </Select.Item>
+                    ))}
               </Select.Content>
             </Select.Root>
 
@@ -131,14 +133,16 @@ export function AddressSelector({
               <Select.Content>
                 {country &&
                   state &&
-                  regionData[country]?.[state]?.map((cityName, index) => (
-                    <Select.Item
-                      key={`${state}-${cityName}-${index}`}
-                      value={cityName}
-                    >
-                      {cityName}
-                    </Select.Item>
-                  ))}
+                  [...(regionData[country]?.[state] || [])]
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((cityName, index) => (
+                      <Select.Item
+                        key={`${state}-${cityName}-${index}`}
+                        value={cityName}
+                      >
+                        {cityName}
+                      </Select.Item>
+                    ))}
               </Select.Content>
             </Select.Root>
 
