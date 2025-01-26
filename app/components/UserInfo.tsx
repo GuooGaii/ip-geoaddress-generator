@@ -3,13 +3,15 @@
 import { DataList, Text, Skeleton, IconButton, Flex } from "@radix-ui/themes";
 import { User } from "../types";
 import { CopyStatus } from "./CopyStatus";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 
 interface UserInfoProps {
   user: User | null;
   loading: boolean;
   copiedId: string;
   onCopy: (text: string, id: string) => void;
+  email: string;
+  onInboxOpen: () => void;
 }
 
 export function UserInfo({
@@ -17,6 +19,8 @@ export function UserInfo({
   loading,
   copiedId,
   onCopy,
+  email,
+  onInboxOpen,
 }: Readonly<UserInfoProps>) {
   if (loading) {
     return (
@@ -171,10 +175,10 @@ export function UserInfo({
               color="gray"
               variant="ghost"
               className="group"
-              onClick={() => onCopy("123@mail.com", "email")}
+              onClick={() => onCopy(email, "email")}
             >
               <Flex align="center" gap="2">
-                <Text highContrast>123@mail.com</Text>
+                <Text highContrast>{email}</Text>
                 <CopyStatus isCopied={copiedId === "email"} />
               </Flex>
             </IconButton>
@@ -182,9 +186,10 @@ export function UserInfo({
               size="1"
               variant="soft"
               color="gray"
-              onClick={() => window.open("mailto:123@mail.com")}
+              onClick={onInboxOpen}
+              disabled={!email}
             >
-              <ExternalLinkIcon width="16" height="16" />
+              <EnvelopeClosedIcon width="16" height="16" />
             </IconButton>
           </Flex>
         </DataList.Value>
