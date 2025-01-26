@@ -39,9 +39,11 @@ https://ip-geoaddress-generator.pages.dev/
 
 [Cloudfare部署](Cloudfare部署教程.md)
 
-[Docker部署](https://linux.do/t/topic/234815)
+Docker部署
 
-在此感谢LinuxDo论坛的[F-droid](https://linux.do/u/F-droid/summary)提供的Docker部署教程以及镜像
+```bash
+docker run -p 3000:3000 guoogaii/ip-geoaddress-generator:latest
+```
 
 ## 本地开发
 
@@ -53,15 +55,13 @@ https://ip-geoaddress-generator.pages.dev/
 2. 安装依赖：
    ```bash
    cd ip-geoaddress-generator
-   pnpm install
+   npm install
    ```
 
 3. 运行开发服务器：
    ```bash
-   pnpm dev
+   npm dev
    ```
-
-4. 在浏览器中打开 `http://localhost:3000`
 
 ## 注意事项
 
@@ -75,9 +75,17 @@ https://ip-geoaddress-generator.pages.dev/
 
 ### 致谢
 
-感谢LinuxDo论坛的[F-droid](https://linux.do/u/F-droid/summary)提供的Docker部署教程以及镜像
+感谢LinuxDo论坛的[F-droid](https://linux.do/u/F-droid/summary)曾经提供的[Docker部署教程以及镜像](https://linux.do/t/topic/234815)
 
 感谢LinuxDo论坛的[HirasawaYui](https://linux.do/u/HirasawaYui/summary)提供的GitHub Action
+
+感谢以下API服务的支持：
+
+- [ipify](https://www.ipify.org/) - IP地址检测
+- [ipapi](https://ipapi.co/) - IP地理位置信息
+- [RandomUser](https://randomuser.me/) - 随机用户信息生成
+- [OpenStreetMap](https://www.openstreetmap.org/) - 地理编码服务
+- [Google Maps](https://www.google.com/maps) - 地图显示服务
 
 ## 许可证
 
