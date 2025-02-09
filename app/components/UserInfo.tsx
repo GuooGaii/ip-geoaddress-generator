@@ -3,7 +3,6 @@
 import { DataList, Text, Skeleton, IconButton, Flex } from "@radix-ui/themes";
 import { User } from "../types";
 import { CopyStatus } from "./CopyStatus";
-import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 
 interface UserInfoProps {
   user: User | null;
@@ -11,7 +10,6 @@ interface UserInfoProps {
   copiedId: string;
   onCopy: (text: string, id: string) => void;
   email: string;
-  onInboxOpen: () => void;
 }
 
 export function UserInfo({
@@ -20,7 +18,6 @@ export function UserInfo({
   copiedId,
   onCopy,
   email,
-  onInboxOpen,
 }: Readonly<UserInfoProps>) {
   if (loading) {
     return (
@@ -168,30 +165,19 @@ export function UserInfo({
           <Text size="2">邮箱</Text>
         </DataList.Label>
         <DataList.Value>
-          <Flex align="center" gap="3">
-            <IconButton
-              size="3"
-              aria-label="复制"
-              color="gray"
-              variant="ghost"
-              className="group"
-              onClick={() => onCopy(email, "email")}
-            >
-              <Flex align="center" gap="2">
-                <Text highContrast>{email}</Text>
-                <CopyStatus isCopied={copiedId === "email"} />
-              </Flex>
-            </IconButton>
-            <IconButton
-              size="1"
-              variant="soft"
-              color="gray"
-              onClick={onInboxOpen}
-              disabled={!email}
-            >
-              <EnvelopeClosedIcon width="16" height="16" />
-            </IconButton>
-          </Flex>
+          <IconButton
+            size="3"
+            aria-label="复制"
+            color="gray"
+            variant="ghost"
+            className="group"
+            onClick={() => onCopy(email, "email")}
+          >
+            <Flex align="center" gap="2">
+              <Text highContrast>{email}</Text>
+              <CopyStatus isCopied={copiedId === "email"} />
+            </Flex>
+          </IconButton>
         </DataList.Value>
       </DataList.Item>
     </DataList.Root>

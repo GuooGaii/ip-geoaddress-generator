@@ -28,6 +28,7 @@ import {
   SunIcon,
   ReloadIcon,
   GitHubLogoIcon,
+  EnvelopeClosedIcon,
 } from "@radix-ui/react-icons";
 import { ThemeContext } from "./theme-provider";
 import { UserInfo } from "./components/UserInfo";
@@ -36,6 +37,7 @@ import { AddressSelector } from "./components/AddressSelector";
 import { InboxDialog } from "./components/InboxDialog";
 import { HistoryList } from "./components/HistoryList";
 import Mailjs from "@cemalgnlts/mailjs";
+import { Toast } from "./components/Toast";
 
 const generateId = () =>
   `history-${Date.now()}-${Math.random().toString(36).substring(2)}`;
@@ -187,6 +189,9 @@ export default function Home() {
   const [inboxOpen, setInboxOpen] = useState(false);
   const [selectedMessage, setSelectedMessage] =
     useState<TempMailMessage | null>(null);
+  const [toastMessage, setToastMessage] = useState<TempMailMessage | null>(
+    null
+  );
 
   // 计算总的加载状态
   const loading = addressLoading || emailLoading;
@@ -254,11 +259,8 @@ export default function Home() {
         const account = await mailjs.createOneAccount();
         if (account.status) {
           setTempEmail(account.data.username);
-          // 登录以获取消息
           await mailjs.login(account.data.username, account.data.password);
-          // 监听新邮件
           mailjs.on("arrive", async (message: MailEvent) => {
-            // 获取完整邮件内容
             const fullMessage = await mailjs.getMessage(message.id);
             if (fullMessage.status) {
               const source = await mailjs.getSource(message.id);
@@ -271,6 +273,7 @@ export default function Home() {
                 },
               } as TempMailMessage;
               setMessages((prev) => [...prev, messageData]);
+              setToastMessage(messageData);
             }
           });
         }
@@ -456,6 +459,11 @@ export default function Home() {
     }
   };
 
+  const handleToastClick = (message: TempMailMessage) => {
+    setInboxOpen(true);
+    setSelectedMessage(message);
+  };
+
   return (
     <Box>
       {/* 导航栏 */}
@@ -476,6 +484,14 @@ export default function Home() {
           <IconButton
             size="4"
             variant="ghost"
+            aria-label="收信箱"
+            onClick={() => setInboxOpen(true)}
+          >
+            <EnvelopeClosedIcon width="24" height="24" />
+          </IconButton>
+          <IconButton
+            size="4"
+            variant="ghost"
             aria-label="GitHub"
             onClick={() =>
               window.open(
@@ -483,14 +499,7 @@ export default function Home() {
                 "_blank"
               )
             }
-            className="group flex items-center gap-2"
           >
-            <Text
-              className="opacity-0 transition-opacity duration-300 group-hover:opacity-100 text-sm"
-              highContrast
-            >
-              喜欢的话点个⭐吧~
-            </Text>
             <GitHubLogoIcon width="24" height="24" />
           </IconButton>
           <IconButton
@@ -619,7 +628,6 @@ export default function Home() {
                     copiedId={copiedId}
                     onCopy={handleCopy}
                     email={tempEmail}
-                    onInboxOpen={() => setInboxOpen(true)}
                   />
                   <Separator size="4" />
                   <AddressInfo
@@ -641,6 +649,13 @@ export default function Home() {
           onMessageClick={handleMessageClick}
           selectedMessage={selectedMessage}
         />
+        {toastMessage && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setToastMessage(null)}
+            onClick={() => handleToastClick(toastMessage)}
+          />
+        )}
       </Flex>
     </Box>
   );
