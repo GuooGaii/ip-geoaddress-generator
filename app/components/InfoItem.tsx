@@ -1,8 +1,8 @@
 "use client";
 
-import { DataList, Text, Skeleton, IconButton, Flex } from "@radix-ui/themes";
-import { CopyStatus } from "./CopyStatus";
+import { DataList, Text, Skeleton, Flex } from "@radix-ui/themes";
 import { ReactNode } from "react";
+import { CopyWrapper } from "./CopyWrapper";
 
 interface InfoItemProps {
   label: string;
@@ -53,19 +53,9 @@ export const InfoItem = ({
     <DataList.Item>
       {labelContent}
       <DataList.Value>
-        <IconButton
-          size="3"
-          aria-label="复制"
-          color="gray"
-          variant="ghost"
-          className="group"
-          onClick={() => onCopy(value, id)}
-        >
-          <Flex align="center" gap="2">
-            <Text highContrast>{value}</Text>
-            <CopyStatus isCopied={copiedId === id} />
-          </Flex>
-        </IconButton>
+        <CopyWrapper value={value} id={id} copiedId={copiedId} onCopy={onCopy}>
+          <Text highContrast>{value}</Text>
+        </CopyWrapper>
       </DataList.Value>
     </DataList.Item>
   );
