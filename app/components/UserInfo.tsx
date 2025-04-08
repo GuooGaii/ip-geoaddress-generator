@@ -1,8 +1,8 @@
 "use client";
 
-import { DataList, Text, Skeleton, IconButton, Flex } from "@radix-ui/themes";
+import { DataList } from "@radix-ui/themes";
 import { User } from "../types";
-import { CopyStatus } from "./CopyStatus";
+import { InfoItem } from "./InfoItem";
 
 interface UserInfoProps {
   user: User | null;
@@ -17,54 +17,6 @@ interface UserField {
   label: string;
   getValue: (user: User, email: string) => string;
 }
-
-const UserLoadingItem = ({ label }: { label: string }) => (
-  <DataList.Item>
-    <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-      <Text size="2">{label}</Text>
-    </DataList.Label>
-    <DataList.Value>
-      <Skeleton>
-        <Text>Loading...</Text>
-      </Skeleton>
-    </DataList.Value>
-  </DataList.Item>
-);
-
-const UserDataItem = ({
-  label,
-  value,
-  id,
-  onCopy,
-  copiedId,
-}: {
-  label: string;
-  value: string;
-  id: string;
-  onCopy: (text: string, id: string) => void;
-  copiedId: string;
-}) => (
-  <DataList.Item>
-    <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-      <Text size="2">{label}</Text>
-    </DataList.Label>
-    <DataList.Value>
-      <IconButton
-        size="3"
-        aria-label="复制"
-        color="gray"
-        variant="ghost"
-        className="group"
-        onClick={() => onCopy(value, id)}
-      >
-        <Flex align="center" gap="2">
-          <Text highContrast>{value}</Text>
-          <CopyStatus isCopied={copiedId === id} />
-        </Flex>
-      </IconButton>
-    </DataList.Value>
-  </DataList.Item>
-);
 
 export function UserInfo({
   user,
@@ -101,28 +53,17 @@ export function UserInfo({
     },
   ];
 
-  if (loading) {
-    return (
-      <DataList.Root>
-        {userFields.map((field) => (
-          <UserLoadingItem key={field.id} label={field.label} />
-        ))}
-      </DataList.Root>
-    );
-  }
-
-  if (!user) return null;
-
   return (
     <DataList.Root>
       {userFields.map((field) => (
-        <UserDataItem
+        <InfoItem
           key={field.id}
           label={field.label}
-          value={field.getValue(user, email)}
+          value={user ? field.getValue(user, email) : undefined}
           id={field.id}
           onCopy={onCopy}
           copiedId={copiedId}
+          loading={loading}
         />
       ))}
     </DataList.Root>
