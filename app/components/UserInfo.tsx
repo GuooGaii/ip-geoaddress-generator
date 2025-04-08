@@ -7,8 +7,6 @@ import { InfoItem } from "./InfoItem";
 interface UserInfoProps {
   user: User | null;
   loading: boolean;
-  copiedId: string;
-  onCopy: (text: string, id: string) => void;
   email: string;
 }
 
@@ -18,13 +16,7 @@ interface UserField {
   getValue: (user: User, email: string) => string;
 }
 
-export function UserInfo({
-  user,
-  loading,
-  copiedId,
-  onCopy,
-  email,
-}: Readonly<UserInfoProps>) {
+export function UserInfo({ user, loading, email }: Readonly<UserInfoProps>) {
   const userFields: UserField[] = [
     {
       id: "last",
@@ -60,9 +52,6 @@ export function UserInfo({
           key={field.id}
           label={field.label}
           value={user ? field.getValue(user, email) : undefined}
-          id={field.id}
-          onCopy={onCopy}
-          copiedId={copiedId}
           loading={loading}
         />
       ))}

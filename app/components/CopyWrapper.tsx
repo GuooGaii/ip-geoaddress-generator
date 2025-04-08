@@ -2,23 +2,26 @@
 
 import { IconButton, Flex } from "@radix-ui/themes";
 import { CopyStatus } from "./CopyStatus";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 interface CopyWrapperProps {
   children: ReactNode;
   value: string;
-  id: string;
-  copiedId: string;
-  onCopy: (text: string, id: string) => void;
 }
 
-export const CopyWrapper = ({
-  children,
-  value,
-  id,
-  copiedId,
-  onCopy,
-}: CopyWrapperProps) => {
+export const CopyWrapper = ({ children, value }: CopyWrapperProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
   return (
     <IconButton
       size="3"
@@ -26,11 +29,11 @@ export const CopyWrapper = ({
       color="gray"
       variant="ghost"
       className="group"
-      onClick={() => onCopy(value, id)}
+      onClick={handleCopy}
     >
       <Flex align="center" gap="2">
         {children}
-        <CopyStatus isCopied={copiedId === id} />
+        <CopyStatus isCopied={isCopied} />
       </Flex>
     </IconButton>
   );

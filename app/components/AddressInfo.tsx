@@ -9,8 +9,6 @@ import { InfoItem } from "./InfoItem";
 interface AddressInfoProps {
   address: Address | null;
   loading: boolean;
-  copiedId: string;
-  onCopy: (text: string, id: string) => void;
 }
 
 interface AddressField {
@@ -18,12 +16,7 @@ interface AddressField {
   label: string;
 }
 
-export function AddressInfo({
-  address,
-  loading,
-  copiedId,
-  onCopy,
-}: Readonly<AddressInfoProps>) {
+export function AddressInfo({ address, loading }: Readonly<AddressInfoProps>) {
   const service = new WFDService();
   const mapUrl = address ? service.getGoogleMapUrl(address) : null;
 
@@ -100,9 +93,6 @@ export function AddressInfo({
           key={field.id}
           label={field.label}
           value={address?.[field.id]?.toString()}
-          id={field.id}
-          onCopy={onCopy}
-          copiedId={copiedId}
           loading={loading}
           extraIcon={
             field.id === "road" ? getMapIcon(address, mapUrl) : undefined

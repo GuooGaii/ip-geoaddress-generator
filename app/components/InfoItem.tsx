@@ -7,9 +7,6 @@ import { CopyWrapper } from "./CopyWrapper";
 interface InfoItemProps {
   label: string;
   value?: string;
-  id: string;
-  onCopy: (text: string, id: string) => void;
-  copiedId: string;
   loading?: boolean;
   extraIcon?: ReactNode;
   textSize?: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
@@ -18,9 +15,6 @@ interface InfoItemProps {
 export const InfoItem = ({
   label,
   value,
-  id,
-  onCopy,
-  copiedId,
   loading,
   extraIcon,
   textSize = "2",
@@ -53,7 +47,7 @@ export const InfoItem = ({
     <DataList.Item>
       {labelContent}
       <DataList.Value>
-        <CopyWrapper value={value} id={id} copiedId={copiedId} onCopy={onCopy}>
+        <CopyWrapper value={value}>
           <Text highContrast>{value}</Text>
         </CopyWrapper>
       </DataList.Value>
