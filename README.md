@@ -87,6 +87,10 @@ docker run -p 3000:3000 guoogaii/ip-geoaddress-generator:latest
 - [OpenStreetMap](https://www.openstreetmap.org/) - 地理编码服务
 - [Google Maps](https://www.google.com/maps) - 地图显示服务
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=GuooGaii/ip-geoaddress-generator&type=Date)](https://www.star-history.com/#GuooGaii/ip-geoaddress-generator&Date)
+
 ## 许可证
 
 [MIT](https://choosealicense.com/licenses/mit/)
