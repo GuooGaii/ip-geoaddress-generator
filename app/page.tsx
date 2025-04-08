@@ -135,36 +135,8 @@ const useAddressData = (): UseAddressDataReturn => {
   };
 };
 
-const copyToClipboard = async (
-  text: string,
-  setCopiedId: (id: string) => void,
-  id: string
-) => {
-  try {
-    if (typeof window !== "undefined") {
-      try {
-        await window.navigator.clipboard.writeText(text);
-      } catch {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.cssText =
-          "position:fixed;pointer-events:none;opacity:0;";
-        document.body.appendChild(textArea);
-        textArea.select();
-        textArea.setSelectionRange(0, 99999);
-        document.body.removeChild(textArea);
-      }
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(""), 1000);
-    }
-  } catch (err) {
-    console.error("复制失败:", err);
-  }
-};
-
 export default function Home() {
   const { theme, setTheme } = useContext(ThemeContext);
-  const [copiedId, setCopiedId] = useState<string>("");
   const [inputIp, setInputIp] = useState<string>("");
   const [inputMode, setInputMode] = useState<string>("ip");
   const [selectedHistory, setSelectedHistory] = useState<string>("");
@@ -356,10 +328,6 @@ export default function Home() {
     } finally {
       setAddressLoading(false);
     }
-  };
-
-  const handleCopy = (text: string, id: string) => {
-    copyToClipboard(text, setCopiedId, id);
   };
 
   const handleDeleteAllHistory = () => {
@@ -622,20 +590,9 @@ export default function Home() {
               {error && <Text color="red">{error}</Text>}
               <Box style={{ width: "100%" }}>
                 <Flex direction="column" gap="3">
-                  <UserInfo
-                    user={user}
-                    loading={loading}
-                    copiedId={copiedId}
-                    onCopy={handleCopy}
-                    email={tempEmail}
-                  />
+                  <UserInfo user={user} loading={loading} email={tempEmail} />
                   <Separator size="4" />
-                  <AddressInfo
-                    address={address}
-                    loading={loading}
-                    copiedId={copiedId}
-                    onCopy={handleCopy}
-                  />
+                  <AddressInfo address={address} loading={loading} />
                 </Flex>
               </Box>
             </Flex>
