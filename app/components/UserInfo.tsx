@@ -12,6 +12,60 @@ interface UserInfoProps {
   email: string;
 }
 
+interface UserField {
+  id: string;
+  label: string;
+  getValue: (user: User, email: string) => string;
+}
+
+const UserLoadingItem = ({ label }: { label: string }) => (
+  <DataList.Item>
+    <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
+      <Text size="2">{label}</Text>
+    </DataList.Label>
+    <DataList.Value>
+      <Skeleton>
+        <Text>Loading...</Text>
+      </Skeleton>
+    </DataList.Value>
+  </DataList.Item>
+);
+
+const UserDataItem = ({
+  label,
+  value,
+  id,
+  onCopy,
+  copiedId,
+}: {
+  label: string;
+  value: string;
+  id: string;
+  onCopy: (text: string, id: string) => void;
+  copiedId: string;
+}) => (
+  <DataList.Item>
+    <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
+      <Text size="2">{label}</Text>
+    </DataList.Label>
+    <DataList.Value>
+      <IconButton
+        size="3"
+        aria-label="复制"
+        color="gray"
+        variant="ghost"
+        className="group"
+        onClick={() => onCopy(value, id)}
+      >
+        <Flex align="center" gap="2">
+          <Text highContrast>{value}</Text>
+          <CopyStatus isCopied={copiedId === id} />
+        </Flex>
+      </IconButton>
+    </DataList.Value>
+  </DataList.Item>
+);
+
 export function UserInfo({
   user,
   loading,
@@ -19,59 +73,40 @@ export function UserInfo({
   onCopy,
   email,
 }: Readonly<UserInfoProps>) {
+  const userFields: UserField[] = [
+    {
+      id: "last",
+      label: "姓",
+      getValue: (user) => user.name.last,
+    },
+    {
+      id: "first",
+      label: "名",
+      getValue: (user) => user.name.first,
+    },
+    {
+      id: "phone",
+      label: "电话",
+      getValue: (user) => user.phone,
+    },
+    {
+      id: "ssn",
+      label: "SSN",
+      getValue: (user) => user.id.value || "暂无",
+    },
+    {
+      id: "email",
+      label: "邮箱",
+      getValue: (_, email) => email,
+    },
+  ];
+
   if (loading) {
     return (
       <DataList.Root>
-        <DataList.Item>
-          <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-            <Text size="2">姓</Text>
-          </DataList.Label>
-          <DataList.Value>
-            <Skeleton>
-              <Text>Loading...</Text>
-            </Skeleton>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-            <Text size="2">名</Text>
-          </DataList.Label>
-          <DataList.Value>
-            <Skeleton>
-              <Text>Loading...</Text>
-            </Skeleton>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-            <Text size="2">电话</Text>
-          </DataList.Label>
-          <DataList.Value>
-            <Skeleton>
-              <Text>Loading...</Text>
-            </Skeleton>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-            <Text size="2">SSN</Text>
-          </DataList.Label>
-          <DataList.Value>
-            <Skeleton>
-              <Text>Loading...</Text>
-            </Skeleton>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-            <Text size="2">邮箱</Text>
-          </DataList.Label>
-          <DataList.Value>
-            <Skeleton>
-              <Text>Loading...</Text>
-            </Skeleton>
-          </DataList.Value>
-        </DataList.Item>
+        {userFields.map((field) => (
+          <UserLoadingItem key={field.id} label={field.label} />
+        ))}
       </DataList.Root>
     );
   }
@@ -80,106 +115,16 @@ export function UserInfo({
 
   return (
     <DataList.Root>
-      <DataList.Item>
-        <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-          <Text size="2">姓</Text>
-        </DataList.Label>
-        <DataList.Value>
-          <IconButton
-            size="3"
-            aria-label="复制"
-            color="gray"
-            variant="ghost"
-            className="group"
-            onClick={() => onCopy(user.name.last, "last")}
-          >
-            <Flex align="center" gap="2">
-              <Text highContrast>{user.name.last}</Text>
-              <CopyStatus isCopied={copiedId === "last"} />
-            </Flex>
-          </IconButton>
-        </DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-          <Text size="2">名</Text>
-        </DataList.Label>
-        <DataList.Value>
-          <IconButton
-            size="3"
-            aria-label="复制"
-            color="gray"
-            variant="ghost"
-            className="group"
-            onClick={() => onCopy(user.name.first, "first")}
-          >
-            <Flex align="center" gap="2">
-              <Text highContrast>{user.name.first}</Text>
-              <CopyStatus isCopied={copiedId === "first"} />
-            </Flex>
-          </IconButton>
-        </DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-          <Text size="2">电话</Text>
-        </DataList.Label>
-        <DataList.Value>
-          <IconButton
-            size="3"
-            aria-label="复制"
-            color="gray"
-            variant="ghost"
-            className="group"
-            onClick={() => onCopy(user.phone, "phone")}
-          >
-            <Flex align="center" gap="2">
-              <Text highContrast>{user.phone}</Text>
-              <CopyStatus isCopied={copiedId === "phone"} />
-            </Flex>
-          </IconButton>
-        </DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-          <Text size="2">SSN</Text>
-        </DataList.Label>
-        <DataList.Value>
-          <IconButton
-            size="3"
-            aria-label="复制"
-            color="gray"
-            variant="ghost"
-            className="group"
-            onClick={() => onCopy(user.id.value || "暂无", "ssn")}
-          >
-            <Flex align="center" gap="2">
-              <Text highContrast>{user.id.value || "暂无"}</Text>
-              <CopyStatus isCopied={copiedId === "ssn"} />
-            </Flex>
-          </IconButton>
-        </DataList.Value>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.Label minWidth="60px" style={{ marginLeft: "8px" }}>
-          <Text size="2">邮箱</Text>
-        </DataList.Label>
-        <DataList.Value>
-          <IconButton
-            size="3"
-            aria-label="复制"
-            color="gray"
-            variant="ghost"
-            className="group"
-            onClick={() => onCopy(email, "email")}
-          >
-            <Flex align="center" gap="2">
-              <Text highContrast>{email}</Text>
-              <CopyStatus isCopied={copiedId === "email"} />
-            </Flex>
-          </IconButton>
-        </DataList.Value>
-      </DataList.Item>
+      {userFields.map((field) => (
+        <UserDataItem
+          key={field.id}
+          label={field.label}
+          value={field.getValue(user, email)}
+          id={field.id}
+          onCopy={onCopy}
+          copiedId={copiedId}
+        />
+      ))}
     </DataList.Root>
   );
 }
