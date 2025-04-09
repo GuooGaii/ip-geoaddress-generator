@@ -37,7 +37,7 @@ https://ip-geoaddress-generator.pages.dev/
 
 ## 部署
 
-[Cloudfare部署](Cloudfare部署教程.md)
+[Cloudfare部署](https://github.com/GuooGaii/ip-geoaddress-generator/blob/main/Cloudflare部署教程.md)
 
 Docker部署
 
