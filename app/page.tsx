@@ -265,10 +265,6 @@ export default function Home() {
     };
   }, []);
 
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
-
   const handleGenerateAddress = async () => {
     setAddressLoading(true);
     try {
@@ -473,7 +469,7 @@ export default function Home() {
           <IconButton
             size="4"
             variant="ghost"
-            onClick={toggleTheme}
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
             aria-label="切换主题"
           >
             {theme === "light" ? (
