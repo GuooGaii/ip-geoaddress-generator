@@ -2,8 +2,8 @@ import "@radix-ui/themes/styles.css";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { ThemeProvider } from "./theme-provider";
-
-export const metadata = {
+import { Metadata } from "next";
+export const metadata: Metadata = {
   title: "真实地址生成器",
   description: "基于IP地址生成真实地址",
   keywords:
