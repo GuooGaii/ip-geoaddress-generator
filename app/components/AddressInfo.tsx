@@ -1,6 +1,6 @@
 "use client";
 
-import { DataList, IconButton, HoverCard, Box } from "@radix-ui/themes";
+import { DataList, IconButton, HoverCard, Box, Inset } from "@radix-ui/themes";
 import { Address } from "../types";
 import { GlobeIcon } from "@radix-ui/react-icons";
 import { WFDService } from "../services/addressService";
@@ -58,29 +58,30 @@ export function AddressInfo({ address, loading }: Readonly<AddressInfoProps>) {
           sideOffset={5}
           avoidCollisions={true}
         >
-          <Box
-            style={{
-              width: "100%",
-              height: "320px",
-              position: "relative",
-              cursor: "pointer",
-              overflow: "hidden",
-              borderRadius: "var(--radius-3)",
-            }}
-            onClick={() => window.open(mapUrl, "_blank")}
-          >
-            <iframe
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                [address.road, address.city, address.state, address.country]
-                  .filter(Boolean)
-                  .join(", ")
-              )}&output=embed&z=16`}
-            />
-          </Box>
+          <Inset clip="padding-box" side="all" p="0">
+            <Box
+              style={{
+                width: "100%",
+                height: "320px",
+                position: "relative",
+                cursor: "pointer",
+                overflow: "hidden",
+              }}
+              onClick={() => window.open(mapUrl, "_blank")}
+            >
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                  [address.road, address.city, address.state, address.country]
+                    .filter(Boolean)
+                    .join(", ")
+                )}&output=embed&z=16`}
+              />
+            </Box>
+          </Inset>
         </HoverCard.Content>
       </HoverCard.Root>
     );
