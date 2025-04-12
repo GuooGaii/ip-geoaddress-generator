@@ -16,26 +16,20 @@ import {
   Flex,
   Box,
   Code,
-  IconButton,
-  Separator,
   TextField,
   Button,
   Skeleton,
   SegmentedControl,
+  Separator,
 } from "@radix-ui/themes";
-import {
-  MoonIcon,
-  SunIcon,
-  ReloadIcon,
-  GitHubLogoIcon,
-  EnvelopeClosedIcon,
-} from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { ThemeContext } from "./theme-provider";
 import { UserInfo } from "./components/UserInfo";
 import { AddressInfo } from "./components/AddressInfo";
 import { AddressSelector } from "./components/AddressSelector";
 import { InboxDialog } from "./components/InboxDialog";
 import { HistoryList } from "./components/HistoryList";
+import { TopBar } from "./components/TopBar";
 import Mailjs from "@cemalgnlts/mailjs";
 import { Toast } from "./components/Toast";
 
@@ -430,56 +424,11 @@ export default function Home() {
 
   return (
     <Box>
-      {/* 导航栏 */}
-      <Flex
-        justify="end"
-        align="center"
-        px="6"
-        py="4"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-        }}
-      >
-        <Flex gap="6" align="center">
-          <IconButton
-            size="4"
-            variant="ghost"
-            aria-label="收信箱"
-            onClick={() => setInboxOpen(true)}
-          >
-            <EnvelopeClosedIcon width="24" height="24" />
-          </IconButton>
-          <IconButton
-            size="4"
-            variant="ghost"
-            aria-label="GitHub"
-            onClick={() =>
-              window.open(
-                "https://github.com/GuooGaii/ip-geoaddress-generator",
-                "_blank"
-              )
-            }
-          >
-            <GitHubLogoIcon width="24" height="24" />
-          </IconButton>
-          <IconButton
-            size="4"
-            variant="ghost"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            aria-label="切换主题"
-          >
-            {theme === "light" ? (
-              <MoonIcon width="24" height="24" />
-            ) : (
-              <SunIcon width="24" height="24" />
-            )}
-          </IconButton>
-        </Flex>
-      </Flex>
+      <TopBar
+        theme={theme}
+        setTheme={setTheme}
+        onInboxOpen={() => setInboxOpen(true)}
+      />
 
       {/* 主要内容 */}
       <Flex
