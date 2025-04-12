@@ -1,18 +1,14 @@
 import { IconButton, Flex } from "@radix-ui/themes";
-import {
-  EnvelopeClosedIcon,
-  GitHubLogoIcon,
-  MoonIcon,
-  SunIcon,
-} from "@radix-ui/react-icons";
+import { EnvelopeClosedIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { ThemeChanger } from "./ThemeChanger";
+
+const ICON_SIZE = 24;
 
 interface TopBarProps {
-  theme: "light" | "dark";
-  setTheme: (theme: "light" | "dark") => void;
   onInboxOpen: () => void;
 }
 
-export function TopBar({ theme, setTheme, onInboxOpen }: TopBarProps) {
+export function TopBar({ onInboxOpen }: TopBarProps) {
   return (
     <Flex
       justify="end"
@@ -34,7 +30,7 @@ export function TopBar({ theme, setTheme, onInboxOpen }: TopBarProps) {
           aria-label="收信箱"
           onClick={onInboxOpen}
         >
-          <EnvelopeClosedIcon width="24" height="24" />
+          <EnvelopeClosedIcon width={ICON_SIZE} height={ICON_SIZE} />
         </IconButton>
         <IconButton
           size="4"
@@ -47,20 +43,9 @@ export function TopBar({ theme, setTheme, onInboxOpen }: TopBarProps) {
             )
           }
         >
-          <GitHubLogoIcon width="24" height="24" />
+          <GitHubLogoIcon width={ICON_SIZE} height={ICON_SIZE} />
         </IconButton>
-        <IconButton
-          size="4"
-          variant="ghost"
-          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          aria-label="切换主题"
-        >
-          {theme === "light" ? (
-            <MoonIcon width="24" height="24" />
-          ) : (
-            <SunIcon width="24" height="24" />
-          )}
-        </IconButton>
+        <ThemeChanger iconSize={ICON_SIZE} />
       </Flex>
     </Flex>
   );
