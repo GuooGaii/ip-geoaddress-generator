@@ -3,7 +3,7 @@ import type { User, Address, HistoryRecord } from "../types";
 
 export type ExportFormat = "json" | "csv";
 
-export class WFDService {
+export default class WFDService {
   /**
    * 获取当前用户的IP地址
    * @description 获取当前用户的IP地址

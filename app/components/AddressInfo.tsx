@@ -3,7 +3,7 @@
 import { DataList, IconButton, HoverCard, Box, Inset } from "@radix-ui/themes";
 import { Address } from "../types";
 import { GlobeIcon } from "@radix-ui/react-icons";
-import { WFDService } from "../services/addressService";
+import WFDService from "../services/addressService";
 import { InfoItem } from "./InfoItem";
 
 interface AddressInfoProps {
