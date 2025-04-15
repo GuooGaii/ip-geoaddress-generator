@@ -34,9 +34,9 @@ export default function RootLayout({
     <html lang="zh">
       <body className={GeistSans.className}>
         <QueryProvider>
-          {/* <ThemeProvider attribute="class"> */}
-          <Theme accentColor="cyan">{children}</Theme>
-          {/* </ThemeProvider> */}
+          <ThemeProvider attribute="class">
+            <Theme accentColor="cyan">{children}</Theme>
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>
