@@ -2,9 +2,9 @@ import "@radix-ui/themes/styles.css";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Metadata } from "next";
-
 import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
+import QueryProvider from "./QueryProvider";
 
 export const metadata: Metadata = {
   title: "真实地址生成器",
@@ -33,9 +33,11 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <body className={GeistSans.className}>
-        <ThemeProvider attribute="class">
-          <Theme accentColor="cyan">{children}</Theme>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider attribute="class">
+            <Theme accentColor="cyan">{children}</Theme>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

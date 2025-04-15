@@ -12,6 +12,7 @@
     "@cemalgnlts/mailjs": "^3.0.1",
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/themes": "^3.1.6",
+    "@tanstack/react-query": "^5.74.3",
     "axios": "^1.7.9",
     "geist": "^1.3.1",
     "next": "^15.3.0",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tanstack/eslint-plugin-query": "^5.73.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
