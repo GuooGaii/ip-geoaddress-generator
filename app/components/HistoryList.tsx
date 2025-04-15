@@ -3,6 +3,7 @@ import {
   Box,
   IconButton,
   Separator,
+  ScrollArea,
   Badge,
   Button,
   Flex,
@@ -50,19 +51,7 @@ export function HistoryList({
         <Text size="2" mb="2" color="gray">
           历史记录
         </Text>
-        <Box
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            msOverflowStyle: "none",
-            scrollbarWidth: "none",
-          }}
-        >
-          <style>{`
-            *::-webkit-scrollbar {
-              display: none !important;
-            }
-          `}</style>
+        <ScrollArea type="hover" scrollbars="vertical" style={{ flex: 1 }}>
           <Flex direction="column" gap="2" pr="3">
             {history.length === 0 ? (
               <Box
@@ -129,7 +118,7 @@ export function HistoryList({
               ))
             )}
           </Flex>
-        </Box>
+        </ScrollArea>
         {history.length > 0 && (
           <>
             <Separator size="4" my="3" />
