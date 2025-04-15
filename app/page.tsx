@@ -147,19 +147,6 @@ export default function Home() {
     }
   };
 
-  const handleExportJSON = () => {
-    const service = new WFDService();
-    const blob = service.exportHistory(history);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = service.getExportFileName();
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   const handleToastClick = (message: TempMailMessage) => {
     setInboxOpen(true);
     setSelectedMessage(message);
@@ -257,7 +244,6 @@ export default function Home() {
                 onHistoryClick={handleHistoryClick}
                 onDeleteHistory={deleteHistoryRecord}
                 onDeleteAllHistory={deleteAllHistory}
-                onExportJSON={handleExportJSON}
               />
             </Flex>
           </Card>

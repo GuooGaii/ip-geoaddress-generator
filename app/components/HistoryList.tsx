@@ -10,6 +10,7 @@ import {
 } from "@radix-ui/themes";
 import { TrashIcon, DownloadIcon } from "@radix-ui/react-icons";
 import type { HistoryRecord } from "../types";
+import WFDService from "../services/addressService";
 
 interface HistoryListProps {
   history: HistoryRecord[];
@@ -17,7 +18,6 @@ interface HistoryListProps {
   onHistoryClick: (record: HistoryRecord) => void;
   onDeleteHistory: (id: string) => void;
   onDeleteAllHistory: () => void;
-  onExportJSON: () => void;
 }
 
 export function HistoryList({
@@ -26,11 +26,23 @@ export function HistoryList({
   onHistoryClick,
   onDeleteHistory,
   onDeleteAllHistory,
-  onExportJSON,
 }: Readonly<HistoryListProps>) {
   const handleDeleteHistory = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     onDeleteHistory(id);
+  };
+
+  const handleExportJSON = () => {
+    const service = new WFDService();
+    const blob = service.exportHistory(history);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = service.getExportFileName();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -111,7 +123,7 @@ export function HistoryList({
           <>
             <Separator size="4" my="3" />
             <Flex justify="between" gap="3">
-              <Button size="2" variant="soft" onClick={onExportJSON}>
+              <Button size="2" variant="soft" onClick={handleExportJSON}>
                 <Text>导出JSON</Text>
                 <DownloadIcon />
               </Button>
