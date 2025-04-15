@@ -31,7 +31,7 @@ import { TopBar } from "./components/TopBar";
 import { Toast } from "./components/Toast";
 
 export default function Home() {
-  const { ip, setIp } = useIP();
+  const { ip, isLoading: ipLoading, error: ipError } = useIP();
   const { user, setUser, fetchUser } = useUser("US");
   const [inputIp, setInputIp] = useState<string>("");
   const [inputMode, setInputMode] = useState<string>("ip");
@@ -67,7 +67,7 @@ export default function Home() {
   const [shouldAddToHistory, setShouldAddToHistory] = useState(false);
 
   // 计算总的加载状态
-  const isLoading = loading || emailLoading || addressLoading;
+  const isLoading = loading || emailLoading || addressLoading || ipLoading;
 
   // 监听数据变化，添加到历史记录
   useEffect(() => {
@@ -135,7 +135,6 @@ export default function Home() {
     setUser(record.user);
     setAddress(record.address);
     if (!record.ip.includes("|")) {
-      setIp(record.ip);
       if (!record.address.latitude || !record.address.longitude) {
         setCoordinates(null); // 触发重新获取坐标和地址
       } else {
@@ -174,10 +173,12 @@ export default function Home() {
           <Text size="4" color="gray">
             您的当前 IP 地址为：
           </Text>
-          {isLoading ? (
+          {ipLoading ? (
             <Skeleton>
               <Code size="4">loading...</Code>
             </Skeleton>
+          ) : ipError ? (
+            <Text color="red">获取IP失败</Text>
           ) : (
             <Code size="4">{ip}</Code>
           )}

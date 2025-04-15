@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
-import WFDService from "@/app/services/addressService";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function useIP() {
-  const [ip, setIp] = useState<string>("");
-
-  useEffect(() => {
-    const service = new WFDService();
-    service.getCurrentIP().then((result: { ip: string }) => {
-      setIp(result.ip);
-    });
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["ip"],
+    queryFn: async () => {
+      const response = await axios.get("https://api.ipify.org?format=json");
+      return response.data;
+    },
   });
 
-  return { ip, setIp };
+  return {
+    ip: data?.ip || "",
+    isLoading,
+    error,
+  };
 }
