@@ -32,7 +32,12 @@ import { Toast } from "./components/Toast";
 
 export default function Home() {
   const { ip, isLoading: ipLoading, error: ipError } = useIP();
-  const { user, setUser, fetchUser } = useUser("US");
+  const {
+    user,
+    isLoading: userLoading,
+    error: userError,
+    fetchUser,
+  } = useUser("US");
   const [inputIp, setInputIp] = useState<string>("");
   const [inputMode, setInputMode] = useState<string>("ip");
   const {
@@ -67,7 +72,8 @@ export default function Home() {
   const [shouldAddToHistory, setShouldAddToHistory] = useState(false);
 
   // 计算总的加载状态
-  const isLoading = loading || emailLoading || addressLoading || ipLoading;
+  const isLoading =
+    loading || emailLoading || addressLoading || ipLoading || userLoading;
 
   // 监听数据变化，添加到历史记录
   useEffect(() => {
@@ -132,7 +138,6 @@ export default function Home() {
 
   const handleHistoryClick = (record: HistoryRecord) => {
     setSelectedHistory(record.id);
-    setUser(record.user);
     setAddress(record.address);
     if (!record.ip.includes("|")) {
       if (!record.address.latitude || !record.address.longitude) {
@@ -183,6 +188,8 @@ export default function Home() {
             <Code size="4">{ip}</Code>
           )}
         </Flex>
+
+        {userError && <Text color="red">获取用户信息失败</Text>}
 
         <Flex
           gap="4"

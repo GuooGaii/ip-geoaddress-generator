@@ -1,20 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-import { User } from "@/app/types";
-import WFDService from "@/app/services/addressService";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import type { User } from "@/app/types";
 
 export default function useUser(country: string) {
-  const [user, setUser] = useState<User | null>(null);
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["user", country],
+    queryFn: async () => {
+      const response = await axios.get<{ results: User[] }>(
+        `https://randomuser.me/api/?nat=${country}&inc=name,phone,id`
+      );
+      return response.data.results[0];
+    },
+    enabled: !!country,
+    staleTime: 0, // 每次请求都获取新数据
+    gcTime: 0, // 不缓存数据（新版本中 cacheTime 改为 gcTime）
+  });
 
-  const fetchUser = useCallback(() => {
-    const service = new WFDService();
-    service.getRandomUser(country).then((user) => {
-      setUser(user.results[0]);
-    });
-  }, [country]);
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
-
-  return { user, setUser, fetchUser };
+  return {
+    user: data || null,
+    isLoading,
+    error,
+    fetchUser: refetch,
+  };
 }
