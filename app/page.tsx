@@ -37,6 +37,7 @@ export default function Home() {
     isLoading: userLoading,
     error: userError,
     fetchUser,
+    setUser,
   } = useUser("US");
   const [inputIp, setInputIp] = useState<string>("");
   const [inputMode, setInputMode] = useState<string>("ip");
@@ -47,7 +48,7 @@ export default function Home() {
     setCoordinates,
     loading: addressLoading,
     error: addressError,
-  } = useAddress(inputMode === "ip" ? inputIp || ip : null);
+  } = useAddress(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const {
@@ -129,8 +130,20 @@ export default function Home() {
         return;
       }
 
-      await fetchUser();
-      setShouldAddToHistory(true);
+      // IP 模式下的处理
+      const targetIp = inputIp || ip;
+      if (targetIp) {
+        try {
+          const service = new WFDService();
+          const coords = await service.getIPCoordinates(targetIp);
+          setCoordinates(coords);
+          await fetchUser();
+          setShouldAddToHistory(true);
+        } catch (err) {
+          setError("获取地址失败");
+          console.error(err);
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -138,17 +151,9 @@ export default function Home() {
 
   const handleHistoryClick = (record: HistoryRecord) => {
     setSelectedHistory(record.id);
+    // 直接使用历史记录中的数据，不触发任何请求
     setAddress(record.address);
-    if (!record.ip.includes("|")) {
-      if (!record.address.latitude || !record.address.longitude) {
-        setCoordinates(null); // 触发重新获取坐标和地址
-      } else {
-        setCoordinates({
-          latitude: record.address.latitude,
-          longitude: record.address.longitude,
-        });
-      }
-    }
+    setUser(record.user);
   };
 
   const handleToastClick = (message: TempMailMessage) => {

@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import type { User } from "@/app/types";
+import { useState } from "react";
 
 export default function useUser(country: string) {
+  const [user, setUser] = useState<User | null>(null);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["user", country],
     queryFn: async () => {
@@ -17,9 +19,10 @@ export default function useUser(country: string) {
   });
 
   return {
-    user: data || null,
+    user: user || data || null,
     isLoading,
     error,
     fetchUser: refetch,
+    setUser,
   };
 }
