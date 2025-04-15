@@ -1,3 +1,5 @@
+"use client";
+
 import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
 import { ReactNode } from "react";
