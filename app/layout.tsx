@@ -2,7 +2,7 @@ import "@radix-ui/themes/styles.css";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Metadata } from "next";
-// import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
 import QueryProvider from "./QueryProvider";
 
@@ -34,9 +34,9 @@ export default function RootLayout({
     <html lang="zh">
       <body className={GeistSans.className}>
         <QueryProvider>
-          {/* <ThemeProvider attribute="class"> */}
-          <Theme accentColor="cyan">{children}</Theme>
-          {/* </ThemeProvider> */}
+          <ThemeProvider attribute="class">
+            <Theme accentColor="cyan">{children}</Theme>
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>
