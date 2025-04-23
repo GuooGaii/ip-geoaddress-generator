@@ -58,6 +58,7 @@ export default function Home() {
     addHistoryRecord,
     deleteHistoryRecord,
     deleteAllHistory,
+    toggleStarred,
   } = useHistory();
   const {
     tempEmail,
@@ -255,8 +256,9 @@ export default function Home() {
                 history={history}
                 selectedHistory={selectedHistory}
                 onHistoryClick={handleHistoryClick}
-                onDeleteHistory={deleteHistoryRecord}
-                onDeleteAllHistory={deleteAllHistory}
+                onDeleteRecord={deleteHistoryRecord}
+                onDeleteAll={deleteAllHistory}
+                onToggleStarred={toggleStarred}
               />
             </Flex>
           </Card>

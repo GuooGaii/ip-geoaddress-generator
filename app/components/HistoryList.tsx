@@ -8,7 +8,12 @@ import {
   Button,
   Flex,
 } from "@radix-ui/themes";
-import { TrashIcon, DownloadIcon } from "@radix-ui/react-icons";
+import {
+  TrashIcon,
+  DownloadIcon,
+  StarIcon,
+  StarFilledIcon,
+} from "@radix-ui/react-icons";
 import type { HistoryRecord } from "../types";
 import WFDService from "../services/addressService";
 
@@ -16,20 +21,27 @@ interface HistoryListProps {
   history: HistoryRecord[];
   selectedHistory: string;
   onHistoryClick: (record: HistoryRecord) => void;
-  onDeleteHistory: (id: string) => void;
-  onDeleteAllHistory: () => void;
+  onDeleteRecord: (id: string) => void;
+  onDeleteAll: () => void;
+  onToggleStarred: (id: string) => void;
 }
 
 export function HistoryList({
   history,
   selectedHistory,
   onHistoryClick,
-  onDeleteHistory,
-  onDeleteAllHistory,
+  onDeleteRecord,
+  onDeleteAll,
+  onToggleStarred,
 }: Readonly<HistoryListProps>) {
   const handleDeleteHistory = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    onDeleteHistory(id);
+    onDeleteRecord(id);
+  };
+
+  const handleToggleStarred = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleStarred(id);
   };
 
   const handleExportJSON = () => {
@@ -107,6 +119,14 @@ export function HistoryList({
                     </Flex>
                     <IconButton
                       size="1"
+                      color="amber"
+                      variant="ghost"
+                      onClick={(e) => handleToggleStarred(record.id, e)}
+                    >
+                      {record.isStarred ? <StarFilledIcon /> : <StarIcon />}
+                    </IconButton>
+                    <IconButton
+                      size="1"
                       color="red"
                       variant="ghost"
                       onClick={(e) => handleDeleteHistory(record.id, e)}
@@ -127,12 +147,7 @@ export function HistoryList({
                 <Text>导出JSON</Text>
                 <DownloadIcon />
               </Button>
-              <Button
-                size="2"
-                color="red"
-                variant="soft"
-                onClick={onDeleteAllHistory}
-              >
+              <Button size="2" color="red" variant="soft" onClick={onDeleteAll}>
                 <Text>删除全部</Text>
                 <TrashIcon />
               </Button>
