@@ -8,7 +8,12 @@ import {
   Button,
   Flex,
 } from "@radix-ui/themes";
-import { TrashIcon, DownloadIcon } from "@radix-ui/react-icons";
+import {
+  TrashIcon,
+  DownloadIcon,
+  StarIcon,
+  StarFilledIcon,
+} from "@radix-ui/react-icons";
 import type { HistoryRecord } from "../types";
 import WFDService from "../services/addressService";
 
@@ -18,6 +23,7 @@ interface HistoryListProps {
   onHistoryClick: (record: HistoryRecord) => void;
   onDeleteHistory: (id: string) => void;
   onDeleteAllHistory: () => void;
+  onToggleStarred: (id: string) => void;
 }
 
 export function HistoryList({
@@ -26,10 +32,16 @@ export function HistoryList({
   onHistoryClick,
   onDeleteHistory,
   onDeleteAllHistory,
+  onToggleStarred,
 }: Readonly<HistoryListProps>) {
   const handleDeleteHistory = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     onDeleteHistory(id);
+  };
+
+  const handleToggleStarred = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleStarred(id);
   };
 
   const handleExportJSON = () => {
@@ -105,6 +117,14 @@ export function HistoryList({
                         {new Date(record.timestamp).toLocaleDateString()}
                       </Badge>
                     </Flex>
+                    <IconButton
+                      size="1"
+                      color="amber"
+                      variant="ghost"
+                      onClick={(e) => handleToggleStarred(record.id, e)}
+                    >
+                      {record.isStarred ? <StarFilledIcon /> : <StarIcon />}
+                    </IconButton>
                     <IconButton
                       size="1"
                       color="red"
