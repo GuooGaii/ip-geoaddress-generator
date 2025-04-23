@@ -51,8 +51,15 @@ export default function Home() {
   } = useAddress(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { history, selectedHistory, setSelectedHistory, addHistoryRecord } =
-    useHistory();
+  const {
+    history,
+    selectedHistory,
+    setSelectedHistory,
+    addHistoryRecord,
+    deleteHistoryRecord,
+    deleteAllHistory,
+    toggleStarred,
+  } = useHistory();
   const {
     tempEmail,
     emailLoading,
@@ -249,6 +256,9 @@ export default function Home() {
                 history={history}
                 selectedHistory={selectedHistory}
                 onHistoryClick={handleHistoryClick}
+                onDeleteRecord={deleteHistoryRecord}
+                onDeleteAll={deleteAllHistory}
+                onToggleStarred={toggleStarred}
               />
             </Flex>
           </Card>

@@ -16,29 +16,32 @@ import {
 } from "@radix-ui/react-icons";
 import type { HistoryRecord } from "../types";
 import WFDService from "../services/addressService";
-import useHistory from "@/hooks/useHistory";
 
 interface HistoryListProps {
   history: HistoryRecord[];
   selectedHistory: string;
   onHistoryClick: (record: HistoryRecord) => void;
+  onDeleteRecord: (id: string) => void;
+  onDeleteAll: () => void;
+  onToggleStarred: (id: string) => void;
 }
 
 export function HistoryList({
   history,
   selectedHistory,
   onHistoryClick,
+  onDeleteRecord,
+  onDeleteAll,
+  onToggleStarred,
 }: Readonly<HistoryListProps>) {
-  const { deleteHistoryRecord, deleteAllHistory, toggleStarred } = useHistory();
-
   const handleDeleteHistory = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteHistoryRecord(id);
+    onDeleteRecord(id);
   };
 
   const handleToggleStarred = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleStarred(id);
+    onToggleStarred(id);
   };
 
   const handleExportJSON = () => {
@@ -144,12 +147,7 @@ export function HistoryList({
                 <Text>导出JSON</Text>
                 <DownloadIcon />
               </Button>
-              <Button
-                size="2"
-                color="red"
-                variant="soft"
-                onClick={deleteAllHistory}
-              >
+              <Button size="2" color="red" variant="soft" onClick={onDeleteAll}>
                 <Text>删除全部</Text>
                 <TrashIcon />
               </Button>
