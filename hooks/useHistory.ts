@@ -15,6 +15,7 @@ interface UseHistoryReturn {
   }) => void;
   deleteHistoryRecord: (id: string) => void;
   deleteAllHistory: () => void;
+  toggleStarred: (id: string) => void;
 }
 
 export default function useHistory(): UseHistoryReturn {
@@ -35,7 +36,16 @@ export default function useHistory(): UseHistoryReturn {
               ? record.id
               : generateId(),
         }));
-        setHistory(validHistory);
+        // 对历史记录进行排序，收藏的记录置顶
+        const sortedHistory = validHistory.sort(
+          (a: HistoryRecord, b: HistoryRecord) => {
+            if (a.isStarred === b.isStarred) {
+              return b.timestamp - a.timestamp;
+            }
+            return (b.isStarred ? 1 : 0) - (a.isStarred ? 1 : 0);
+          }
+        );
+        setHistory(sortedHistory);
       } catch (e) {
         console.error("Failed to parse history:", e);
         setHistory([]);
@@ -64,6 +74,7 @@ export default function useHistory(): UseHistoryReturn {
       address,
       ip,
       timestamp,
+      isStarred: false,
     };
 
     setHistory((prev) => {
@@ -73,9 +84,31 @@ export default function useHistory(): UseHistoryReturn {
           .toString(36)
           .substring(2)}`;
       }
-      return [newRecord, ...prev.slice(0, 19)];
+      // 对历史记录进行排序，收藏的记录置顶
+      const newHistory = [newRecord, ...prev.slice(0, 19)];
+      return newHistory.sort((a: HistoryRecord, b: HistoryRecord) => {
+        if (a.isStarred === b.isStarred) {
+          return b.timestamp - a.timestamp;
+        }
+        return (b.isStarred ? 1 : 0) - (a.isStarred ? 1 : 0);
+      });
     });
     setSelectedHistory(newRecord.id);
+  };
+
+  const toggleStarred = (id: string) => {
+    setHistory((prev) => {
+      const newHistory = prev.map((record) =>
+        record.id === id ? { ...record, isStarred: !record.isStarred } : record
+      );
+      // 对历史记录进行排序，收藏的记录置顶
+      return newHistory.sort((a: HistoryRecord, b: HistoryRecord) => {
+        if (a.isStarred === b.isStarred) {
+          return b.timestamp - a.timestamp;
+        }
+        return (b.isStarred ? 1 : 0) - (a.isStarred ? 1 : 0);
+      });
+    });
   };
 
   const deleteHistoryRecord = (id: string) => {
@@ -97,5 +130,6 @@ export default function useHistory(): UseHistoryReturn {
     addHistoryRecord,
     deleteHistoryRecord,
     deleteAllHistory,
+    toggleStarred,
   };
 }

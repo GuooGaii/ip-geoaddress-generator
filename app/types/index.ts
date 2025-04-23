@@ -26,6 +26,7 @@ export interface HistoryRecord {
   address: Address;
   ip: string;
   timestamp: number;
+  isStarred?: boolean;
 }
 
 interface ISourceResource {
