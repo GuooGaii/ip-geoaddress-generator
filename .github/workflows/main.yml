@@ -1,0 +1,37 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # 每天 UTC 08:00 运行（可调整）
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork repository
+        uses: actions/checkout@v4
+        with:
+          ref: main # 你的 fork 的默认分支
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "bot@example.com"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/GuooGaii/ip-geoaddress-generator.git
+          git fetch upstream
+
+      - name: Merge upstream changes
+        run: |
+          git checkout main
+          git merge upstream/main --ff-only # 仅允许快进合并
+        continue-on-error: true # 如果合并失败，继续执行
+
+      - name: Push changes
+        run: |
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
