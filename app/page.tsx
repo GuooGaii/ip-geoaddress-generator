@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import useIP from "@/hooks/useIP";
 import useUser from "@/hooks/useUser";
 import useAddress from "@/hooks/useAddress";
@@ -17,6 +17,7 @@ import { ipSignal } from "@/signals/ipSignal";
 import { Header } from "./components/Header";
 import { LeftCard } from "./components/LeftCard";
 import { RightCard } from "./components/RightCard";
+import { effect } from "@preact/signals-react";
 
 export default function Home() {
   const {
@@ -59,14 +60,27 @@ export default function Home() {
   const isLoading =
     loading || emailLoading || addressLoading || ipLoading || userLoading;
 
-  // 监听数据变化，添加到历史记录
-  // useEffect(() => {
-  //   if (!shouldAddToHistory) return;
-  //   if (coordinates && user && address && ip) {
-  //     addHistoryRecord({ user, address, ip });
-  //     setShouldAddToHistory(false);
-  //   }
-  // }, [coordinates, user, address, ip, shouldAddToHistory]);
+  const hasAddedInitialHistory = useRef(false);
+
+  // 使用 signal 的 effect 监听数据变化
+  effect(() => {
+    if (
+      !hasAddedInitialHistory.current &&
+      !ipLoading &&
+      !userLoading &&
+      !addressLoading &&
+      ipSignal.value &&
+      userSignal.value &&
+      addressSignal.value
+    ) {
+      addHistoryRecord({
+        user: userSignal.value,
+        address: addressSignal.value,
+        ip: ipSignal.value,
+      });
+      hasAddedInitialHistory.current = true;
+    }
+  });
 
   const handleGenerateAddress = async () => {
     setLoading(true);
