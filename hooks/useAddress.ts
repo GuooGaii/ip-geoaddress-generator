@@ -8,6 +8,7 @@ export default function useAddress(ip: string | null) {
   const coordinatesQuery = useQuery<Coordinates | null, Error>({
     queryKey: ["coordinates", ip],
     queryFn: async () => {
+      console.log("获取坐标请求发起");
       if (!ip) return null;
       const response = await addressService.getIPCoordinates(ip);
       coordinatesSignal.value = response;
@@ -19,11 +20,12 @@ export default function useAddress(ip: string | null) {
 
   // 获取地址的查询
   const addressQuery = useQuery<Address | null, Error>({
-    queryKey: ["address", coordinatesQuery.data],
+    queryKey: ["address", coordinatesSignal.value],
     queryFn: async () => {
-      if (coordinatesQuery.data) {
+      console.log("获取地址请求发起");
+      if (coordinatesSignal.value) {
         const response = await addressService.getRandomAddress(
-          coordinatesQuery.data
+          coordinatesSignal.value
         );
         addressSignal.value = response;
         return response;
@@ -37,13 +39,6 @@ export default function useAddress(ip: string | null) {
   return {
     isLoading: coordinatesQuery.isLoading || addressQuery.isLoading,
     error: coordinatesQuery.error || addressQuery.error,
-    refetch: async () => {
-      if (ip) {
-        await coordinatesQuery.refetch();
-        if (coordinatesQuery.data) {
-          await addressQuery.refetch();
-        }
-      }
-    },
+    addressRefetch: addressQuery.refetch,
   };
 }
