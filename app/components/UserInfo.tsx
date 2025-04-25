@@ -3,9 +3,10 @@
 import { DataList } from "@radix-ui/themes";
 import { User } from "../types";
 import { InfoItem } from "./InfoItem";
+import { Signal } from "@preact/signals-react";
 
 interface UserInfoProps {
-  user: User | null;
+  userSignal: Signal<User | null>;
   loading: boolean;
   email: string;
 }
@@ -16,7 +17,11 @@ interface UserField {
   getValue: (user: User, email: string) => string;
 }
 
-export function UserInfo({ user, loading, email }: Readonly<UserInfoProps>) {
+export function UserInfo({
+  userSignal,
+  loading,
+  email,
+}: Readonly<UserInfoProps>) {
   const userFields: UserField[] = [
     {
       id: "last",
@@ -51,7 +56,11 @@ export function UserInfo({ user, loading, email }: Readonly<UserInfoProps>) {
         <InfoItem
           key={field.id}
           label={field.label}
-          value={user ? field.getValue(user, email) : undefined}
+          value={
+            userSignal.value
+              ? field.getValue(userSignal.value, email)
+              : undefined
+          }
           loading={loading}
         />
       ))}

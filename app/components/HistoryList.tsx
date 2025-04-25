@@ -19,7 +19,7 @@ import WFDService from "../services/addressService";
 
 interface HistoryListProps {
   history: HistoryRecord[];
-  selectedHistory: string;
+  selectedHistory: string | null;
   onHistoryClick: (record: HistoryRecord) => void;
   onDeleteRecord: (id: string) => void;
   onDeleteAll: () => void;

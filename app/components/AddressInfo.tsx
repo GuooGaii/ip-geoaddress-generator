@@ -3,11 +3,12 @@
 import { DataList, IconButton, HoverCard, Box, Inset } from "@radix-ui/themes";
 import { Address } from "../types";
 import { GlobeIcon } from "@radix-ui/react-icons";
-import WFDService from "../services/addressService";
+import { addressService } from "@/services/addressService";
 import { InfoItem } from "./InfoItem";
+import { Signal } from "@preact/signals-react";
 
 interface AddressInfoProps {
-  address: Address | null;
+  addressSignal: Signal<Address | null>;
   loading: boolean;
 }
 
@@ -16,9 +17,15 @@ interface AddressField {
   label: string;
 }
 
-export function AddressInfo({ address, loading }: Readonly<AddressInfoProps>) {
-  const service = new WFDService();
-  const mapUrl = address ? service.getGoogleMapUrl(address) : null;
+export function AddressInfo({
+  addressSignal,
+  loading,
+}: Readonly<AddressInfoProps>) {
+  console.log("地址展示组件刷新");
+
+  const mapUrl = addressSignal.value
+    ? addressService.getGoogleMapUrl(addressSignal.value)
+    : null;
 
   const addressFields: AddressField[] = [
     { id: "road", label: "街道" },
@@ -93,10 +100,12 @@ export function AddressInfo({ address, loading }: Readonly<AddressInfoProps>) {
         <InfoItem
           key={field.id}
           label={field.label}
-          value={address?.[field.id]?.toString()}
+          value={addressSignal.value?.[field.id]?.toString()}
           loading={loading}
           extraIcon={
-            field.id === "road" ? getMapIcon(address, mapUrl) : undefined
+            field.id === "road"
+              ? getMapIcon(addressSignal.value, mapUrl)
+              : undefined
           }
         />
       ))}

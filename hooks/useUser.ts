@@ -1,28 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { userService } from "@/services/userService";
 import type { User } from "@/app/types";
-import { useState } from "react";
-
+import { userSignal } from "@/signals/userSignal";
 export default function useUser(country: string) {
-  const [user, setUser] = useState<User | null>(null);
-  const { data, isLoading, error, refetch } = useQuery({
+  const userQuery = useQuery<User, Error>({
     queryKey: ["user", country],
     queryFn: async () => {
-      const response = await axios.get<{ results: User[] }>(
-        `https://randomuser.me/api/?nat=${country}&inc=name,phone,id`
-      );
-      return response.data.results[0];
+      console.log("用户请求发起");
+      const response = await userService.fetchUser(country);
+      userSignal.value = response;
+      return response;
     },
     enabled: !!country,
-    staleTime: 0, // 每次请求都获取新数据
-    gcTime: 0, // 不缓存数据（新版本中 cacheTime 改为 gcTime）
+    refetchOnWindowFocus: false, // 在窗口重新聚焦时不要重新获取数据
   });
 
   return {
-    user: user || data || null,
-    isLoading,
-    error,
-    fetchUser: refetch,
-    setUser,
+    isLoading: userQuery.isLoading,
+    error: userQuery.error,
+    refetch: userQuery.refetch,
   };
 }

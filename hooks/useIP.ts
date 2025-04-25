@@ -1,18 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { ipSignal } from "@/signals/ipSignal";
+import { ipService } from "@/services/ipService";
+import type { IPResponse } from "@/services/ipService";
 
 export default function useIP() {
-  const { data, isLoading, error } = useQuery({
+  const IPQuery = useQuery<IPResponse, Error>({
     queryKey: ["ip"],
     queryFn: async () => {
-      const response = await axios.get("https://api.ipify.org?format=json");
-      return response.data;
+      console.log("IP请求发起");
+      const response = await ipService.fetchIP();
+      ipSignal.value = response.ip;
+      return response;
     },
+    refetchOnWindowFocus: false, // 在窗口重新聚焦时不要重新获取数据
   });
 
   return {
-    ip: data?.ip || "",
-    isLoading,
-    error,
+    isLoading: IPQuery.isLoading,
+    error: IPQuery.error,
   };
 }
