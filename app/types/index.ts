@@ -10,14 +10,18 @@ export interface User {
   };
 }
 
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
 export interface Address {
   road?: string;
   city?: string;
   state?: string;
   postcode?: string;
   country?: string;
-  latitude?: number;
-  longitude?: number;
+  coordinates?: Coordinates;
 }
 
 export interface HistoryRecord {
