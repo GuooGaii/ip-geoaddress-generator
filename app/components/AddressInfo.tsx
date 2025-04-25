@@ -21,7 +21,7 @@ export function AddressInfo({
   addressSignal,
   loading,
 }: Readonly<AddressInfoProps>) {
-  console.log("地址展示组件刷新");
+  // console.log("地址展示组件刷新");
 
   const mapUrl = addressSignal.value
     ? addressService.getGoogleMapUrl(addressSignal.value)

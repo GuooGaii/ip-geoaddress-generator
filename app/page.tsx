@@ -1,28 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+
 import useIP from "@/hooks/useIP";
 import useUser from "@/hooks/useUser";
 import useAddress from "@/hooks/useAddress";
 import useHistory from "@/hooks/useHistory";
 import useMail from "@/hooks/useMail";
-import type { HistoryRecord, TempMailMessage } from "./types";
+
+import type { HistoryRecord, TempMailMessage } from "@/app/types";
+
 import { Text, Flex, Box } from "@radix-ui/themes";
 import { InboxDialog } from "./components/InboxDialog";
 import { TopBar } from "./components/TopBar";
 import { Toast } from "./components/Toast";
-import { userSignal } from "@/signals/userSignal";
-import { addressSignal } from "@/signals/addressSignal";
-import { ipSignal } from "@/signals/ipSignal";
 import { Header } from "./components/Header";
 import { LeftCard } from "./components/LeftCard";
 import { RightCard } from "./components/RightCard";
+
+import { effect } from "@preact/signals-react";
+import { addressService } from "@/services/addressService";
+
+import { userSignal } from "@/signals/userSignal";
+import { ipSignal } from "@/signals/ipSignal";
+import { addressSignal, coordinatesSignal } from "@/signals/addressSignal";
 
 export default function Home() {
   const {
     isLoading: addressLoading,
     error: addressError,
-    refetch: fetchAddress,
+    addressRefetch: fetchAddress,
   } = useAddress(ipSignal.value);
   const { isLoading: ipLoading, error: ipError } = useIP();
   const {
@@ -59,40 +66,59 @@ export default function Home() {
   const isLoading =
     loading || emailLoading || addressLoading || ipLoading || userLoading;
 
-  // 监听数据变化，添加到历史记录
-  // useEffect(() => {
-  //   if (!shouldAddToHistory) return;
-  //   if (coordinates && user && address && ip) {
-  //     addHistoryRecord({ user, address, ip });
-  //     setShouldAddToHistory(false);
-  //   }
-  // }, [coordinates, user, address, ip, shouldAddToHistory]);
+  const hasAddedInitialHistory = useRef(false);
+
+  // 使用 signal 的 effect 监听数据变化
+  effect(() => {
+    if (
+      !hasAddedInitialHistory.current &&
+      !ipLoading &&
+      !userLoading &&
+      !addressLoading &&
+      ipSignal.value &&
+      userSignal.value &&
+      addressSignal.value
+    ) {
+      addHistoryRecord({
+        user: userSignal.value,
+        address: addressSignal.value,
+        ip: ipSignal.value,
+      });
+      hasAddedInitialHistory.current = true;
+    }
+  });
 
   const handleGenerateAddress = async () => {
     setLoading(true);
     try {
-      //   if (inputMode === "address") {
-      //     if (!inputIp) {
-      //       setError("请选择地址");
-      //       return;
-      //     }
-      //     const [country, state, city] = inputIp.split("|");
-      //     try {
-      //       const service = new WFDService();
-      //       const coords = await service.getCoordinates(country, state, city);
-      //       coordinatesSignal.value = coords;
-      //       await fetchUser();
-      //       addHistoryRecord({
-      //         user: userSignal.value,
-      //         address: addressSignal.value,
-      //         ip: ipSignal.value,
-      //       });
-      //     } catch (err) {
-      //       setError("获取地址失败");
-      //       console.error(err);
-      //     }
-      //     return;
-      //   }
+      if (inputMode === "address") {
+        if (!inputIp) {
+          setError("请选择地址");
+          return;
+        }
+        const [country, state, city] = inputIp.split("|");
+        try {
+          const coordinates = await addressService.getCoordinates(
+            country,
+            state,
+            city
+          );
+          coordinatesSignal.value = coordinates;
+          await fetchUser();
+          await fetchAddress();
+          if (userSignal.value && addressSignal.value && ipSignal.value) {
+            addHistoryRecord({
+              user: userSignal.value,
+              address: addressSignal.value,
+              ip: ipSignal.value,
+            });
+          }
+        } catch (err) {
+          setError("获取地址失败");
+          console.error(err);
+        }
+        return;
+      }
 
       // IP 模式下的处理
       const targetIp = inputIp || ipSignal.value;

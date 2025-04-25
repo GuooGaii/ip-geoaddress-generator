@@ -21,6 +21,27 @@ class AddressService {
     return response.data.address;
   }
 
+  async getCoordinates(
+    country: string,
+    state: string,
+    city: string
+  ): Promise<Coordinates> {
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${city},${state},${country}&format=json&limit=1`;
+      const response = await axios.get(url);
+      const { lat, lon } = response.data[0];
+      return { latitude: lat, longitude: lon };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(
+          `获取地理坐标失败(${city}, ${state}, ${country}):`,
+          error.message
+        );
+      }
+      throw error;
+    }
+  }
+
   getGoogleMapUrl(address: Address): string {
     const addressString = [
       address.road,
