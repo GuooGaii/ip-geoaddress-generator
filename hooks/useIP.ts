@@ -15,8 +15,5 @@ export default function useIP() {
     refetchOnWindowFocus: false, // 在窗口重新聚焦时不要重新获取数据
   });
 
-  return {
-    isLoading: IPQuery.isLoading,
-    error: IPQuery.error,
-  };
+  return IPQuery;
 }

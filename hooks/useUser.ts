@@ -15,9 +15,5 @@ export default function useUser(country: string) {
     refetchOnWindowFocus: false, // 在窗口重新聚焦时不要重新获取数据
   });
 
-  return {
-    isLoading: userQuery.isLoading,
-    error: userQuery.error,
-    refetch: userQuery.refetch,
-  };
+  return userQuery;
 }
