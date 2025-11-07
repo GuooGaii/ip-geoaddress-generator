@@ -5,21 +5,75 @@ export type ExportFormat = "json" | "csv";
 
 export default class WFDService {
   /**
-   * 获取当前用户的IP地址
-   * @description 获取当前用户的IP地址
+   * 获取当前用户的IP地址 (v2.0.0)
+   * @description 使用本地 API 和降级策略获取 IP 地址
    * @returns {Promise<{ ip: string }>} 包含IP地址的对象
    */
   async getCurrentIP(): Promise<{ ip: string }> {
+    console.log("=== addressService v2.0.0: getCurrentIP 开始 ===");
+    
+    // 方法 1: 使用本地 API
     try {
-      const url = "https://api.ipify.org?format=json";
-      const response = await axios.get(url);
-      return response.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error("获取当前IP地址失败:", error.message);
+      console.log("尝试方法 1: 本地 API (/api/ip)");
+      const response = await fetch("/api/ip", {
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.ip) {
+          console.log("✅ 方法 1 成功:", data.ip);
+          return { ip: data.ip };
+        }
       }
-      throw error;
+      console.warn("⚠️ 方法 1 失败: 响应无效");
+    } catch (error) {
+      console.warn("⚠️ 方法 1 失败:", error);
     }
+
+    // 方法 2: 使用 Cloudflare 同源 trace
+    try {
+      console.log("尝试方法 2: Cloudflare 同源 trace (/cdn-cgi/trace)");
+      const response = await fetch("/cdn-cgi/trace", { cache: "no-store" });
+      
+      if (response.ok) {
+        const text = await response.text();
+        const ipMatch = text.match(/ip=([^\n]+)/);
+        if (ipMatch && ipMatch[1]) {
+          console.log("✅ 方法 2 成功:", ipMatch[1]);
+          return { ip: ipMatch[1] };
+        }
+      }
+      console.warn("⚠️ 方法 2 失败: 无法解析 IP");
+    } catch (error) {
+      console.warn("⚠️ 方法 2 失败:", error);
+    }
+
+    // 方法 3: 使用 Cloudflare 公网 trace
+    try {
+      console.log("尝试方法 3: Cloudflare 公网 trace (https://1.1.1.1/cdn-cgi/trace)");
+      const response = await fetch("https://1.1.1.1/cdn-cgi/trace", {
+        cache: "no-store",
+      });
+      
+      if (response.ok) {
+        const text = await response.text();
+        const ipMatch = text.match(/ip=([^\n]+)/);
+        if (ipMatch && ipMatch[1]) {
+          console.log("✅ 方法 3 成功:", ipMatch[1]);
+          return { ip: ipMatch[1] };
+        }
+      }
+      console.warn("⚠️ 方法 3 失败: 无法解析 IP");
+    } catch (error) {
+      console.warn("⚠️ 方法 3 失败:", error);
+    }
+
+    // 所有方法都失败
+    const errorMsg = "所有 IP 获取方法都失败了";
+    console.error("❌", errorMsg);
+    throw new Error(errorMsg);
   }
 
   /**
