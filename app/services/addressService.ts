@@ -1,4 +1,3 @@
-import axios from "axios";
 import type { User, Address, HistoryRecord } from "../types";
 
 export type ExportFormat = "json" | "csv";
@@ -86,8 +85,12 @@ export default class WFDService {
   ): Promise<{ latitude: number; longitude: number }> {
     try {
       const url = `https://ipapi.co/${ip}/json/`;
-      const response = await axios.get(url);
-      const { latitude, longitude } = response.data;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const { latitude, longitude } = data;
       return { latitude, longitude };
     } catch (error) {
       if (error instanceof Error) {
@@ -105,8 +108,12 @@ export default class WFDService {
   async getRandomUser(country: string) {
     try {
       const url = `https://randomuser.me/api/?nat=${country}&inc=name,phone,id`;
-      const response = await axios.get<{ results: User[] }>(url);
-      return response.data;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json() as { results: User[] };
+      return data;
     } catch (error) {
       if (error instanceof Error) {
         console.error(`获取随机用户信息失败(国家: ${country}):`, error.message);
@@ -125,8 +132,12 @@ export default class WFDService {
   async getCoordinates(country: string, state: string, city: string) {
     try {
       const url = `https://nominatim.openstreetmap.org/search?q=${city},${state},${country}&format=json&limit=1`;
-      const response = await axios.get(url);
-      const { lat, lon } = response.data[0];
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const { lat, lon } = data[0];
       return { lat, lon };
     } catch (error) {
       if (error instanceof Error) {
@@ -169,8 +180,12 @@ export default class WFDService {
       const { latitude: randomLat, longitude: randomLon } =
         this.generateRandomOffset(latitude, longitude);
       const url = `https://nominatim.openstreetmap.org/reverse?lat=${randomLat}&lon=${randomLon}&format=json&accept-language=en`;
-      const response = await axios.get(url);
-      return response.data.address;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data.address;
     } catch (error) {
       if (error instanceof Error) {
         console.error(
