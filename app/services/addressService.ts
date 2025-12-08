@@ -4,6 +4,29 @@ export type ExportFormat = "json" | "csv";
 
 export default class WFDService {
   /**
+   * 带超时的 fetch 请求
+   * @param url 请求URL
+   * @param timeout 超时时间（毫秒）
+   * @returns Promise<Response>
+   */
+  private async fetchWithTimeout(url: string, timeout = 10000): Promise<Response> {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+      const response = await fetch(url, { 
+        signal: controller.signal,
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      clearTimeout(id);
+      return response;
+    } catch (error) {
+      clearTimeout(id);
+      throw error;
+    }
+  }
+
+  /**
    * 获取当前用户的IP地址 (v2.0.0)
    * @description 使用本地 API 和降级策略获取 IP 地址
    * @returns {Promise<{ ip: string }>} 包含IP地址的对象
@@ -101,25 +124,37 @@ export default class WFDService {
   }
 
   /**
-   * 获取随机用户信息
-   * @param country 国家代码
+   * 获取随机用户信息（带超时和备用API）
    * @returns {Promise<{ results: User[] }>} 包含用户信息的对象
    */
-  async getRandomUser(country: string) {
-    try {
-      const url = `https://randomuser.me/api/?nat=${country}&inc=name,phone,id`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  async getRandomUser(): Promise<{ results: User[] }> {
+    // 主API和备用API列表
+    const apis = [
+      "https://randomuser.me/api/?nat=US&inc=name,phone,id",
+      "https://randomuser.me/api/?nat=GB&inc=name,phone,id",
+      "https://randomuser.me/api/?nat=CA&inc=name,phone,id",
+    ];
+    
+    for (const apiUrl of apis) {
+      try {
+        console.log(`尝试获取用户数据: ${apiUrl}`);
+        const response = await this.fetchWithTimeout(apiUrl, 8000);
+        
+        if (!response.ok) {
+          console.warn(`API返回错误状态: ${response.status}`);
+          continue;
+        }
+        
+        const data = await response.json() as { results: User[] };
+        console.log("✅ 用户数据获取成功");
+        return data;
+      } catch (error) {
+        console.warn(`API调用失败 (${apiUrl}):`, error);
+        continue;
       }
-      const data = await response.json() as { results: User[] };
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(`获取随机用户信息失败(国家: ${country}):`, error.message);
-      }
-      throw error;
     }
+    
+    throw new Error("All user APIs failed");
   }
 
   /**
