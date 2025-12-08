@@ -142,7 +142,7 @@ export default class WFDService {
           last: nameParts.slice(1).join(' ') || "Doe"
         },
         phone: data.phone_h || data.phone_w || "(555) 123-4567",
-        id: { value: data.pict || "N/A" }
+        id: { name: "SSN", value: data.pict || "N/A" }
       }]
     };
   }
