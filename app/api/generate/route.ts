@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { wfdService } from "@/services/WFDService";
+import WFDService from "@/app/services/addressService";
 
 export const runtime = "edge";
+
+const wfdService = new WFDService();
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +16,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 在服务端调用所有外部 API
     const coordinates = await wfdService.getIPCoordinates(ip);
     const address = await wfdService.getRandomAddress(
       coordinates.latitude,
