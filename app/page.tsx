@@ -174,7 +174,7 @@ export default function Home() {
       >
         <Header ipLoading={ipLoading} ipError={ipError} ipSignal={ipSignal} />
 
-        {userError && <Text color="red">获取用户信息失败</Text>}
+        {userError && <Text color="red">用户信息暂不可用</Text>}
 
         <Flex
           gap="4"
