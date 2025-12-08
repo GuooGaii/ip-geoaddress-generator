@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 使用 standalone 输出模式，适合 Cloudflare Pages
-  output: 'standalone',
-  
   // 禁用静态优化，确保每次都重新生成
   generateBuildId: async () => {
     // 使用时间戳 + 随机数作为构建 ID，强制更新
