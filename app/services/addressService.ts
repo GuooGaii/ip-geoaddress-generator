@@ -163,7 +163,7 @@ export default class WFDService {
       results: [{
         name: { first: person.firstname, last: person.lastname },
         phone: person.phone,
-        id: { value: "N/A" }
+        id: { name: "N/A", value: "N/A" }
       }]
     };
   }
