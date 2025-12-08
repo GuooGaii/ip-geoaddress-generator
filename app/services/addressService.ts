@@ -103,28 +103,62 @@ export default class WFDService {
   }
 
   /**
-   * 获取IP地址的坐标
+   * 获取IP地址的坐标（带多API备用）
    * @param ip IP地址
    * @returns {Promise<{ latitude: number, longitude: number }>} 包含坐标对象
    */
   async getIPCoordinates(
     ip: string
   ): Promise<{ latitude: number; longitude: number }> {
+    // API 1: ipapi.co
     try {
-      const url = `https://ipapi.co/${ip}/json/`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      console.log(`尝试获取IP坐标 (ipapi.co): ${ip}`);
+      const response = await this.fetchWithTimeout(`https://ipapi.co/${ip}/json/`, 8000);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.latitude && data.longitude) {
+          console.log("✅ IP坐标获取成功 (ipapi.co)");
+          return { latitude: data.latitude, longitude: data.longitude };
+        }
       }
-      const data = await response.json();
-      const { latitude, longitude } = data;
-      return { latitude, longitude };
+      console.warn("⚠️ ipapi.co 返回无效数据");
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(`获取IP(${ip})坐标失败:`, error.message);
-      }
-      throw error;
+      console.warn("⚠️ ipapi.co 失败:", error);
     }
+
+    // API 2: ip-api.com (备用)
+    try {
+      console.log(`尝试备用API (ip-api.com): ${ip}`);
+      const response = await this.fetchWithTimeout(`http://ip-api.com/json/${ip}`, 8000);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === "success" && data.lat && data.lon) {
+          console.log("✅ IP坐标获取成功 (ip-api.com)");
+          return { latitude: data.lat, longitude: data.lon };
+        }
+      }
+      console.warn("⚠️ ip-api.com 返回无效数据");
+    } catch (error) {
+      console.warn("⚠️ ip-api.com 失败:", error);
+    }
+
+    // API 3: ipwho.is (备用)
+    try {
+      console.log(`尝试备用API (ipwho.is): ${ip}`);
+      const response = await this.fetchWithTimeout(`https://ipwho.is/${ip}`, 8000);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.latitude && data.longitude) {
+          console.log("✅ IP坐标获取成功 (ipwho.is)");
+          return { latitude: data.latitude, longitude: data.longitude };
+        }
+      }
+      console.warn("⚠️ ipwho.is 返回无效数据");
+    } catch (error) {
+      console.warn("⚠️ ipwho.is 失败:", error);
+    }
+
+    throw new Error(`所有IP坐标API都失败了 (IP: ${ip})`);
   }
 
   /**
@@ -233,7 +267,7 @@ export default class WFDService {
   async getCoordinates(country: string, state: string, city: string) {
     try {
       const url = `https://nominatim.openstreetmap.org/search?q=${city},${state},${country}&format=json&limit=1`;
-      const response = await fetch(url);
+      const response = await this.fetchWithTimeout(url, 10000);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -268,7 +302,7 @@ export default class WFDService {
   }
 
   /**
-   * 获取随机地址
+   * 获取随机地址（带多API备用）
    * @param latitude 纬度
    * @param longitude 经度
    * @returns {Promise<Address>} 包含地址对象
@@ -277,25 +311,52 @@ export default class WFDService {
     latitude: number,
     longitude: number
   ): Promise<Address> {
+    const { latitude: randomLat, longitude: randomLon } =
+      this.generateRandomOffset(latitude, longitude);
+
+    // API 1: Nominatim (OpenStreetMap)
     try {
-      const { latitude: randomLat, longitude: randomLon } =
-        this.generateRandomOffset(latitude, longitude);
+      console.log(`尝试获取地址 (Nominatim): ${randomLat}, ${randomLon}`);
       const url = `https://nominatim.openstreetmap.org/reverse?lat=${randomLat}&lon=${randomLon}&format=json&accept-language=en`;
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await this.fetchWithTimeout(url, 10000);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.address) {
+          console.log("✅ 地址获取成功 (Nominatim)");
+          return data.address;
+        }
       }
-      const data = await response.json();
-      return data.address;
+      console.warn("⚠️ Nominatim 返回无效数据");
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(
-          `获取随机地址失败(坐标: ${latitude}, ${longitude}):`,
-          error.message
-        );
-      }
-      throw error;
+      console.warn("⚠️ Nominatim 失败:", error);
     }
+
+    // API 2: BigDataCloud (备用)
+    try {
+      console.log(`尝试备用API (BigDataCloud): ${randomLat}, ${randomLon}`);
+      const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${randomLat}&longitude=${randomLon}&localityLanguage=en`;
+      const response = await this.fetchWithTimeout(url, 10000);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.locality || data.city) {
+          console.log("✅ 地址获取成功 (BigDataCloud)");
+          // 转换为统一格式
+          return {
+            road: data.locality || "",
+            city: data.city || data.locality || "",
+            state: data.principalSubdivision || "",
+            postcode: data.postcode || "",
+            country: data.countryName || "",
+            country_code: data.countryCode?.toLowerCase() || "",
+          } as Address;
+        }
+      }
+      console.warn("⚠️ BigDataCloud 返回无效数据");
+    } catch (error) {
+      console.warn("⚠️ BigDataCloud 失败:", error);
+    }
+
+    throw new Error(`所有地址API都失败了 (坐标: ${latitude}, ${longitude})`);
   }
 
   /**
