@@ -4,7 +4,7 @@ export type ExportFormat = "json" | "csv";
 
 export default class WFDService {
   /**
-   * 带超时的 fetch 请求
+   * 带超时的 fetch 请求（增强请求头）
    * @param url 请求URL
    * @param timeout 超时时间（毫秒）
    * @returns Promise<Response>
@@ -16,7 +16,11 @@ export default class WFDService {
     try {
       const response = await fetch(url, { 
         signal: controller.signal,
-        headers: { 'User-Agent': 'Mozilla/5.0' }
+        headers: { 
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9'
+        }
       });
       clearTimeout(id);
       return response;
@@ -124,18 +128,60 @@ export default class WFDService {
   }
 
   /**
-   * 获取随机用户信息（带超时和备用API）
+   * 从 namefake.com 获取用户数据（备用API 1）
+   */
+  private async fetchFromNamefake(): Promise<{ results: User[] }> {
+    const response = await this.fetchWithTimeout("https://api.namefake.com/", 8000);
+    if (!response.ok) throw new Error("namefake failed");
+    const data = await response.json();
+    const nameParts = (data.name || "John Doe").split(' ');
+    return {
+      results: [{
+        name: { 
+          first: nameParts[0] || "John", 
+          last: nameParts.slice(1).join(' ') || "Doe"
+        },
+        phone: data.phone_h || data.phone_w || "(555) 123-4567",
+        id: { value: data.pict || "N/A" }
+      }]
+    };
+  }
+
+  /**
+   * 从 fakerapi.it 获取用户数据（备用API 2）
+   */
+  private async fetchFromFakerapi(): Promise<{ results: User[] }> {
+    const response = await this.fetchWithTimeout(
+      "https://fakerapi.it/api/v1/persons?_quantity=1&_locale=en_US",
+      8000
+    );
+    if (!response.ok) throw new Error("fakerapi failed");
+    const data = await response.json();
+    const person = data.data?.[0];
+    if (!person) throw new Error("No person data");
+    return {
+      results: [{
+        name: { first: person.firstname, last: person.lastname },
+        phone: person.phone,
+        id: { value: "N/A" }
+      }]
+    };
+  }
+
+  /**
+   * 获取随机用户信息（带超时、多服务商备用API）
    * @returns {Promise<{ results: User[] }>} 包含用户信息的对象
    */
   async getRandomUser(): Promise<{ results: User[] }> {
-    // 主API和备用API列表
-    const apis = [
+    // 主API：randomuser.me 多国端点
+    const randomuserApis = [
       "https://randomuser.me/api/?nat=US&inc=name,phone,id",
       "https://randomuser.me/api/?nat=GB&inc=name,phone,id",
       "https://randomuser.me/api/?nat=CA&inc=name,phone,id",
     ];
     
-    for (const apiUrl of apis) {
+    // 尝试 randomuser.me
+    for (const apiUrl of randomuserApis) {
       try {
         console.log(`尝试获取用户数据: ${apiUrl}`);
         const response = await this.fetchWithTimeout(apiUrl, 8000);
@@ -146,12 +192,32 @@ export default class WFDService {
         }
         
         const data = await response.json() as { results: User[] };
-        console.log("✅ 用户数据获取成功");
+        console.log("✅ 用户数据获取成功 (randomuser.me)");
         return data;
       } catch (error) {
         console.warn(`API调用失败 (${apiUrl}):`, error);
         continue;
       }
+    }
+
+    // 备用API 1: namefake.com
+    try {
+      console.log("尝试备用API: namefake.com");
+      const result = await this.fetchFromNamefake();
+      console.log("✅ 用户数据获取成功 (namefake.com)");
+      return result;
+    } catch (error) {
+      console.warn("namefake.com 失败:", error);
+    }
+
+    // 备用API 2: fakerapi.it
+    try {
+      console.log("尝试备用API: fakerapi.it");
+      const result = await this.fetchFromFakerapi();
+      console.log("✅ 用户数据获取成功 (fakerapi.it)");
+      return result;
+    } catch (error) {
+      console.warn("fakerapi.it 失败:", error);
     }
     
     throw new Error("All user APIs failed");
