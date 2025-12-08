@@ -126,20 +126,20 @@ export default class WFDService {
       console.warn("⚠️ ipapi.co 失败:", error);
     }
 
-    // API 2: ip-api.com (备用)
+    // API 2: freeipapi.com (备用 - HTTPS)
     try {
-      console.log(`尝试备用API (ip-api.com): ${ip}`);
-      const response = await this.fetchWithTimeout(`http://ip-api.com/json/${ip}`, 8000);
+      console.log(`尝试备用API (freeipapi.com): ${ip}`);
+      const response = await this.fetchWithTimeout(`https://freeipapi.com/api/json/${ip}`, 8000);
       if (response.ok) {
         const data = await response.json();
-        if (data.status === "success" && data.lat && data.lon) {
-          console.log("✅ IP坐标获取成功 (ip-api.com)");
-          return { latitude: data.lat, longitude: data.lon };
+        if (data.latitude && data.longitude) {
+          console.log("✅ IP坐标获取成功 (freeipapi.com)");
+          return { latitude: data.latitude, longitude: data.longitude };
         }
       }
-      console.warn("⚠️ ip-api.com 返回无效数据");
+      console.warn("⚠️ freeipapi.com 返回无效数据");
     } catch (error) {
-      console.warn("⚠️ ip-api.com 失败:", error);
+      console.warn("⚠️ freeipapi.com 失败:", error);
     }
 
     // API 3: ipwho.is (备用)
@@ -156,6 +156,25 @@ export default class WFDService {
       console.warn("⚠️ ipwho.is 返回无效数据");
     } catch (error) {
       console.warn("⚠️ ipwho.is 失败:", error);
+    }
+
+    // API 4: ipinfo.io (备用)
+    try {
+      console.log(`尝试备用API (ipinfo.io): ${ip}`);
+      const response = await this.fetchWithTimeout(`https://ipinfo.io/${ip}/json`, 8000);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.loc) {
+          const [lat, lon] = data.loc.split(',').map(Number);
+          if (!isNaN(lat) && !isNaN(lon)) {
+            console.log("✅ IP坐标获取成功 (ipinfo.io)");
+            return { latitude: lat, longitude: lon };
+          }
+        }
+      }
+      console.warn("⚠️ ipinfo.io 返回无效数据");
+    } catch (error) {
+      console.warn("⚠️ ipinfo.io 失败:", error);
     }
 
     throw new Error(`所有IP坐标API都失败了 (IP: ${ip})`);
