@@ -1,15 +1,14 @@
-import axios from "axios";
-
 export interface IPResponse {
   ip: string;
 }
 
 class IPService {
   async fetchIP(): Promise<IPResponse> {
-    const response = await axios.get<IPResponse>(
-      "https://api.ipify.org?format=json"
-    );
-    return response.data;
+    const response = await fetch("https://api.ipify.org?format=json");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
   }
 }
 
