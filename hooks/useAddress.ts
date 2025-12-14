@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { addressSignal, coordinatesSignal } from "@/signals/addressSignal";
+import { qualitySignal } from "@/signals/qualitySignal";
 import type { Address } from "@/app/types";
+import type { IPQualityResult } from "@/app/types/ipQuality";
 
 interface GenerateResponse {
   ip: string;
@@ -12,6 +14,7 @@ interface GenerateResponse {
     country: string;
   };
   address: Address;
+  quality?: IPQualityResult;
 }
 
 export default function useAddress(ip: string | null) {
@@ -35,6 +38,11 @@ export default function useAddress(ip: string | null) {
       // 更新 signals
       coordinatesSignal.value = data.coordinates;
       addressSignal.value = data.address;
+      
+      // 更新 quality signal
+      if (data.quality) {
+        qualitySignal.value = data.quality;
+      }
       
       return data;
     },
