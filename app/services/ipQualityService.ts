@@ -101,6 +101,10 @@ IP: ${ip}
   }
 }
 
+// ============ 类型定义 ============
+
+type MergedResult = Record<string, unknown> & { sources: string[] };
+
 // ============ 主服务类 ============
 
 const API_TIMEOUT = 5000;
@@ -214,7 +218,7 @@ export class IPQualityService {
       .map((result) => result.value);
   }
 
-  private mergeResults(results: Array<{ source: string; data: Record<string, unknown> }>) {
+  private mergeResults(results: Array<{ source: string; data: Record<string, unknown> }>): MergedResult {
     const sources: string[] = [];
     const merged = results.reduce((acc, result) => {
       sources.push(result.source);
@@ -223,7 +227,7 @@ export class IPQualityService {
     return { ...merged, sources };
   }
 
-  private async enhanceResult(data: Record<string, unknown>, ip: string) {
+  private async enhanceResult(data: MergedResult, ip: string) {
     const isNative = this.determineNative(data);
     const isDualIsp = this.determineDualISP(data);
 
@@ -283,6 +287,7 @@ export class IPQualityService {
       org: d.organisation,
       asn: d.asn,
       ASN: d.asn,
+      as: d.asn,
     };
   }
 
