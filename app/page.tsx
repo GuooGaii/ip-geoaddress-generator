@@ -293,8 +293,8 @@ export default function Home() {
                 <Box style={{ flex: "1", minWidth: "200px" }}>
                   <Text size="2" color="gray" mb="2">网络信息</Text>
                   <Flex direction="column" gap="1">
-                    <Text size="2">ISP: {getStr(q.isp)}</Text>
-                    <Text size="2">ASN: {getStr(q.asn || q.ASN)}</Text>
+                    <Text size="2">{`ISP: ${getStr(q.isp)}`}</Text>
+                    <Text size="2">{`ASN: ${getStr(q.asn || q.ASN)}`}</Text>
                   </Flex>
                 </Box>
               </Flex>
@@ -303,17 +303,17 @@ export default function Home() {
               <Box>
                 <Text size="2" color="gray" mb="2">威胁标记</Text>
                 <Flex gap="2" wrap="wrap">
-                  <Badge color={getBool(q.isVpn) ? "red" : "green"}>
-                    VPN: {getBool(q.isVpn) ? "是" : "否"}
+                  <Badge color={q.isVpn === true ? "red" : "green"}>
+                    {`VPN: ${q.isVpn === true ? "是" : "否"}`}
                   </Badge>
-                  <Badge color={getBool(q.isProxy) ? "red" : "green"}>
-                    代理: {getBool(q.isProxy) ? "是" : "否"}
+                  <Badge color={q.isProxy === true ? "red" : "green"}>
+                    {`代理: ${q.isProxy === true ? "是" : "否"}`}
                   </Badge>
-                  <Badge color={getBool(q.isTor) ? "red" : "green"}>
-                    Tor: {getBool(q.isTor) ? "是" : "否"}
+                  <Badge color={q.isTor === true ? "red" : "green"}>
+                    {`Tor: ${q.isTor === true ? "是" : "否"}`}
                   </Badge>
-                  <Badge color={getBool(q.isHosting) ? "orange" : "green"}>
-                    托管/数据中心: {getBool(q.isHosting) ? "是" : "否"}
+                  <Badge color={q.isHosting === true ? "orange" : "green"}>
+                    {`托管/数据中心: ${q.isHosting === true ? "是" : "否"}`}
                   </Badge>
                 </Flex>
               </Box>
@@ -322,15 +322,15 @@ export default function Home() {
               <Flex gap="4" wrap="wrap">
                 <Box>
                   <Text size="2" color="gray" mb="2">原生 IP</Text>
-                  <Badge color={getBool(q.isNative) ? "green" : "orange"}>
-                    {getBool(q.isNative) ? "是 (原生)" : "否 (广播)"}
+                  <Badge color={q.isNative === true ? "green" : "orange"}>
+                    {q.isNative === true ? "是 (原生)" : "否 (广播)"}
                   </Badge>
                 </Box>
 
                 <Box>
                   <Text size="2" color="gray" mb="2">双 ISP</Text>
-                  <Badge color={getBool(q.isDualIsp) ? "orange" : "green"}>
-                    {getBool(q.isDualIsp) ? "是" : "否"}
+                  <Badge color={q.isDualIsp === true ? "orange" : "green"}>
+                    {q.isDualIsp === true ? "是" : "否"}
                   </Badge>
                 </Box>
               </Flex>
@@ -341,12 +341,12 @@ export default function Home() {
                   <Text size="2" color="gray" mb="2">Cloudflare ASN 流量分析</Text>
                   <Flex gap="3" align="center">
                     <Text size="2">
-                      Bot 流量: {getNum(q.cf_asn_bot_pct)?.toFixed(1) ?? "N/A"}%
+                      {`Bot 流量: ${getNum(q.cf_asn_bot_pct)?.toFixed(1) ?? "N/A"}%`}
                     </Text>
                     <Text size="2">
-                      人类流量: {getNum(q.cf_asn_human_pct)?.toFixed(1) ?? "N/A"}%
+                      {`人类流量: ${getNum(q.cf_asn_human_pct)?.toFixed(1) ?? "N/A"}%`}
                     </Text>
-                    {getBool(q.cf_asn_likely_bot) && (
+                    {q.cf_asn_likely_bot === true && (
                       <Badge color="red">高风险 ASN</Badge>
                     )}
                   </Flex>
@@ -358,7 +358,7 @@ export default function Home() {
                 <Box>
                   <Text size="2" color="gray" mb="2">数据来源</Text>
                   <Flex gap="1" wrap="wrap">
-                    {q.sources.map((source: string) => (
+                    {(q.sources as string[]).map((source) => (
                       <Badge key={source} variant="outline" color="gray">
                         {source}
                       </Badge>
