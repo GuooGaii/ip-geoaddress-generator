@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   // 测试 ip-api.io（无需 API Key）
   try {
-    const response = await fetch(`https://ip-api.io/json/${ip}`, {
+    const response = await fetch(`https://ip-api.io/${ip}`, {
       headers: { "User-Agent": "Mozilla/5.0" },
     });
     const data = await response.json();
