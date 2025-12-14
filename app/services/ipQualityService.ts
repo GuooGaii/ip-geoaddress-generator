@@ -155,7 +155,7 @@ export class IPQualityService {
       },
       {
         name: "ipapi",
-        url: `https://ip-api.io/json/${ip}`,
+        url: `https://ip-api.io/${ip}`,
         enabled: true,
         transform: (d) => this.transformIPApi(d),
       },
