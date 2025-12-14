@@ -1,30 +1,23 @@
 export interface IPQualityResult {
-  ip: string;
+  ip?: string;
+  fraudScore?: number;
+  abuseScore?: number;
   ipType?: string;
   isp?: string;
   org?: string;
-  asn?: string | number;
-  as?: string | number;
-  ASN?: string | number;
-  country?: string;
-  countryCode?: string;
-  fraudScore?: number;
-  fraud_score?: number;
-  abuseScore?: number;
-  abuse_confidence_score?: number;
+  asn?: string;
+  ASN?: string;
   isVpn?: boolean;
-  vpn?: boolean;
   isProxy?: boolean;
-  proxy?: boolean;
   isTor?: boolean;
-  tor?: boolean;
+  isHosting?: boolean;
   isNative?: boolean;
   isDualIsp?: boolean;
   cf_asn_bot_pct?: number;
   cf_asn_human_pct?: number;
   cf_asn_likely_bot?: boolean;
+  sources?: string[];
   aiReasoning?: string;
-  ai_reasoning?: string;
-  timestamp: string;
+  timestamp?: string;
   [key: string]: unknown;
 }
