@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { IPQualityService } from "@/services/ipQualityService";
+import { IPQualityService } from "@/app/services/ipQualityService";
 
 export const runtime = "edge";
 
