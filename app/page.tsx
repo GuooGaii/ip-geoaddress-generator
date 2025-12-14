@@ -63,13 +63,11 @@ export default function Home() {
     handleMessageClick,
   } = useMail();
   const [inboxOpen, setInboxOpen] = useState(false);
-  // 计算总的加载状态
   const isLoading =
     loading || emailLoading || addressLoading || ipLoading || userLoading;
 
   const hasAddedInitialHistory = useRef(false);
 
-  // 使用 signal 的 effect 监听数据变化
   effect(() => {
     if (
       !hasAddedInitialHistory.current &&
@@ -121,7 +119,6 @@ export default function Home() {
         return;
       }
 
-      // IP 模式下的处理
       const targetIp = inputIp || ipSignal.value;
       if (targetIp) {
         try {
@@ -146,7 +143,6 @@ export default function Home() {
 
   const handleHistoryClick = (record: HistoryRecord) => {
     setSelectedHistory(record.id);
-    // 直接使用历史记录中的数据，不触发任何请求
     addressSignal.value = record.address;
     userSignal.value = record.user;
   };
@@ -156,8 +152,7 @@ export default function Home() {
     setSelectedMessage(message);
   };
 
-  // 获取风险等级颜色
-  const getRiskColor = (score: number | undefined) => {
+  const getRiskColor = (score: number | undefined): "gray" | "green" | "yellow" | "orange" | "red" => {
     if (score === undefined) return "gray";
     if (score <= 25) return "green";
     if (score <= 50) return "yellow";
@@ -165,8 +160,7 @@ export default function Home() {
     return "red";
   };
 
-  // 获取风险等级文字
-  const getRiskLevel = (score: number | undefined) => {
+  const getRiskLevel = (score: number | undefined): string => {
     if (score === undefined) return "未知";
     if (score <= 25) return "低风险";
     if (score <= 50) return "中等风险";
@@ -174,11 +168,16 @@ export default function Home() {
     return "高风险";
   };
 
+  // 类型安全的取值函数
+  const q = qualitySignal.value;
+  const getNum = (val: unknown): number | undefined => typeof val === "number" ? val : undefined;
+  const getStr = (val: unknown): string => (val !== null && val !== undefined) ? String(val) : "N/A";
+  const getBool = (val: unknown): boolean => Boolean(val);
+
   return (
     <Box>
       <TopBar onInboxOpen={() => setInboxOpen(true)} />
 
-      {/* 主要内容 */}
       <Flex
         className="min-h-screen"
         direction="column"
@@ -188,7 +187,7 @@ export default function Home() {
         style={{
           backgroundImage: "var(--background-image)",
           backgroundSize: "var(--background-size)",
-          paddingTop: "60px", // 为固定导航栏留出空间
+          paddingTop: "60px",
         }}
       >
         <Header ipLoading={ipLoading} ipError={ipError} ipSignal={ipSignal} />
@@ -200,7 +199,6 @@ export default function Home() {
           style={{ width: "100%", maxWidth: "900px" }}
           className="flex flex-col md:flex-row"
         >
-          {/* 左侧卡片 */}
           <LeftCard
             inputIp={inputIp}
             inputMode={inputMode}
@@ -216,7 +214,6 @@ export default function Home() {
             onToggleStarred={toggleStarred}
           />
 
-          {/* 右侧卡片 */}
           <RightCard
             userSignal={userSignal}
             addressSignal={addressSignal}
@@ -235,7 +232,7 @@ export default function Home() {
             <Flex align="center" justify="center" py="6">
               <Text color="gray">正在检测...</Text>
             </Flex>
-          ) : qualitySignal.value ? (
+          ) : q ? (
             <Flex direction="column" gap="4">
               {/* 风险评分概览 */}
               <Flex gap="4" wrap="wrap">
@@ -243,19 +240,19 @@ export default function Home() {
                   <Text size="2" color="gray" mb="1">欺诈评分 (Fraud Score)</Text>
                   <Flex align="center" gap="2">
                     <Text size="5" weight="bold">
-                      {qualitySignal.value.fraudScore ?? "N/A"}
+                      {getStr(q.fraudScore)}
                     </Text>
-                    {qualitySignal.value.fraudScore !== undefined && (
-                      <Badge color={getRiskColor(qualitySignal.value.fraudScore as number)}>
-                        {getRiskLevel(qualitySignal.value.fraudScore as number)}
+                    {getNum(q.fraudScore) !== undefined && (
+                      <Badge color={getRiskColor(getNum(q.fraudScore))}>
+                        {getRiskLevel(getNum(q.fraudScore))}
                       </Badge>
                     )}
                   </Flex>
-                  {qualitySignal.value.fraudScore !== undefined && (
+                  {getNum(q.fraudScore) !== undefined && (
                     <Progress 
-                      value={qualitySignal.value.fraudScore as number} 
+                      value={getNum(q.fraudScore)} 
                       max={100}
-                      color={getRiskColor(qualitySignal.value.fraudScore as number)}
+                      color={getRiskColor(getNum(q.fraudScore))}
                       style={{ marginTop: "8px" }}
                     />
                   )}
@@ -265,19 +262,19 @@ export default function Home() {
                   <Text size="2" color="gray" mb="1">滥用评分 (Abuse Score)</Text>
                   <Flex align="center" gap="2">
                     <Text size="5" weight="bold">
-                      {qualitySignal.value.abuseScore ?? "N/A"}
+                      {getStr(q.abuseScore)}
                     </Text>
-                    {qualitySignal.value.abuseScore !== undefined && (
-                      <Badge color={getRiskColor(qualitySignal.value.abuseScore as number)}>
-                        {getRiskLevel(qualitySignal.value.abuseScore as number)}
+                    {getNum(q.abuseScore) !== undefined && (
+                      <Badge color={getRiskColor(getNum(q.abuseScore))}>
+                        {getRiskLevel(getNum(q.abuseScore))}
                       </Badge>
                     )}
                   </Flex>
-                  {qualitySignal.value.abuseScore !== undefined && (
+                  {getNum(q.abuseScore) !== undefined && (
                     <Progress 
-                      value={qualitySignal.value.abuseScore as number} 
+                      value={getNum(q.abuseScore)} 
                       max={100}
-                      color={getRiskColor(qualitySignal.value.abuseScore as number)}
+                      color={getRiskColor(getNum(q.abuseScore))}
                       style={{ marginTop: "8px" }}
                     />
                   )}
@@ -289,15 +286,15 @@ export default function Home() {
                 <Box style={{ flex: "1", minWidth: "200px" }}>
                   <Text size="2" color="gray" mb="2">IP 类型</Text>
                   <Badge size="2" color="blue">
-                    {qualitySignal.value.ipType || "未知"}
+                    {getStr(q.ipType) || "未知"}
                   </Badge>
                 </Box>
 
                 <Box style={{ flex: "1", minWidth: "200px" }}>
                   <Text size="2" color="gray" mb="2">网络信息</Text>
                   <Flex direction="column" gap="1">
-                    <Text size="2">ISP: {qualitySignal.value.isp || "N/A"}</Text>
-                    <Text size="2">ASN: {qualitySignal.value.asn || qualitySignal.value.ASN || "N/A"}</Text>
+                    <Text size="2">ISP: {getStr(q.isp)}</Text>
+                    <Text size="2">ASN: {getStr(q.asn || q.ASN)}</Text>
                   </Flex>
                 </Box>
               </Flex>
@@ -306,17 +303,17 @@ export default function Home() {
               <Box>
                 <Text size="2" color="gray" mb="2">威胁标记</Text>
                 <Flex gap="2" wrap="wrap">
-                  <Badge color={qualitySignal.value.isVpn ? "red" : "green"}>
-                    VPN: {qualitySignal.value.isVpn ? "是" : "否"}
+                  <Badge color={getBool(q.isVpn) ? "red" : "green"}>
+                    VPN: {getBool(q.isVpn) ? "是" : "否"}
                   </Badge>
-                  <Badge color={qualitySignal.value.isProxy ? "red" : "green"}>
-                    代理: {qualitySignal.value.isProxy ? "是" : "否"}
+                  <Badge color={getBool(q.isProxy) ? "red" : "green"}>
+                    代理: {getBool(q.isProxy) ? "是" : "否"}
                   </Badge>
-                  <Badge color={qualitySignal.value.isTor ? "red" : "green"}>
-                    Tor: {qualitySignal.value.isTor ? "是" : "否"}
+                  <Badge color={getBool(q.isTor) ? "red" : "green"}>
+                    Tor: {getBool(q.isTor) ? "是" : "否"}
                   </Badge>
-                  <Badge color={qualitySignal.value.isHosting ? "orange" : "green"}>
-                    托管/数据中心: {qualitySignal.value.isHosting ? "是" : "否"}
+                  <Badge color={getBool(q.isHosting) ? "orange" : "green"}>
+                    托管/数据中心: {getBool(q.isHosting) ? "是" : "否"}
                   </Badge>
                 </Flex>
               </Box>
@@ -325,31 +322,31 @@ export default function Home() {
               <Flex gap="4" wrap="wrap">
                 <Box>
                   <Text size="2" color="gray" mb="2">原生 IP</Text>
-                  <Badge color={qualitySignal.value.isNative ? "green" : "orange"}>
-                    {qualitySignal.value.isNative ? "是 (原生)" : "否 (广播)"}
+                  <Badge color={getBool(q.isNative) ? "green" : "orange"}>
+                    {getBool(q.isNative) ? "是 (原生)" : "否 (广播)"}
                   </Badge>
                 </Box>
 
                 <Box>
                   <Text size="2" color="gray" mb="2">双 ISP</Text>
-                  <Badge color={qualitySignal.value.isDualIsp ? "orange" : "green"}>
-                    {qualitySignal.value.isDualIsp ? "是" : "否"}
+                  <Badge color={getBool(q.isDualIsp) ? "orange" : "green"}>
+                    {getBool(q.isDualIsp) ? "是" : "否"}
                   </Badge>
                 </Box>
               </Flex>
 
               {/* Cloudflare ASN Bot 检测 */}
-              {(qualitySignal.value.cf_asn_bot_pct !== undefined || qualitySignal.value.cf_asn_human_pct !== undefined) && (
+              {(getNum(q.cf_asn_bot_pct) !== undefined || getNum(q.cf_asn_human_pct) !== undefined) && (
                 <Box>
                   <Text size="2" color="gray" mb="2">Cloudflare ASN 流量分析</Text>
                   <Flex gap="3" align="center">
                     <Text size="2">
-                      Bot 流量: {qualitySignal.value.cf_asn_bot_pct?.toFixed(1) ?? "N/A"}%
+                      Bot 流量: {getNum(q.cf_asn_bot_pct)?.toFixed(1) ?? "N/A"}%
                     </Text>
                     <Text size="2">
-                      人类流量: {qualitySignal.value.cf_asn_human_pct?.toFixed(1) ?? "N/A"}%
+                      人类流量: {getNum(q.cf_asn_human_pct)?.toFixed(1) ?? "N/A"}%
                     </Text>
-                    {qualitySignal.value.cf_asn_likely_bot && (
+                    {getBool(q.cf_asn_likely_bot) && (
                       <Badge color="red">高风险 ASN</Badge>
                     )}
                   </Flex>
@@ -357,11 +354,11 @@ export default function Home() {
               )}
 
               {/* 数据来源 */}
-              {qualitySignal.value.sources && qualitySignal.value.sources.length > 0 && (
+              {q.sources && Array.isArray(q.sources) && q.sources.length > 0 && (
                 <Box>
                   <Text size="2" color="gray" mb="2">数据来源</Text>
                   <Flex gap="1" wrap="wrap">
-                    {qualitySignal.value.sources.map((source: string) => (
+                    {q.sources.map((source: string) => (
                       <Badge key={source} variant="outline" color="gray">
                         {source}
                       </Badge>
@@ -371,12 +368,12 @@ export default function Home() {
               )}
 
               {/* AI 分析报告 */}
-              {qualitySignal.value.aiReasoning && (
+              {q.aiReasoning && (
                 <Box>
                   <Text size="2" color="gray" mb="2">AI 分析报告</Text>
                   <Card style={{ backgroundColor: "var(--gray-2)", padding: "12px" }}>
                     <Text size="2" style={{ whiteSpace: "pre-wrap" }}>
-                      {qualitySignal.value.aiReasoning}
+                      {String(q.aiReasoning)}
                     </Text>
                   </Card>
                 </Box>
