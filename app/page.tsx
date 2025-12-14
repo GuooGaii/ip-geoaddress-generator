@@ -172,8 +172,7 @@ export default function Home() {
   const q = qualitySignal.value;
   const getNum = (val: unknown): number | undefined => typeof val === "number" ? val : undefined;
   const getStr = (val: unknown): string => (val !== null && val !== undefined) ? String(val) : "N/A";
-  const getBool = (val: unknown): boolean => Boolean(val);
-
+  
   return (
     <Box>
       <TopBar onInboxOpen={() => setInboxOpen(true)} />
