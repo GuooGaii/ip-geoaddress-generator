@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 
 import useIP from "@/hooks/useIP";
 import useUser from "@/hooks/useUser";
+import useCoordinates from "@/hooks/useCoordinates";
 import useAddress from "@/hooks/useAddress";
 import useHistory from "@/hooks/useHistory";
 import useMail from "@/hooks/useMail";
@@ -27,10 +28,15 @@ import { addressSignal, coordinatesSignal } from "@/signals/addressSignal";
 
 export default function Home() {
   const {
+    isLoading: coordinatesLoading,
+    // error: coordinatesError,
+    data: coordinates,
+  } = useCoordinates(ipSignal.value);
+  const {
     isLoading: addressLoading,
     error: addressError,
-    addressRefetch: fetchAddress,
-  } = useAddress(ipSignal.value);
+    refetch: fetchAddress,
+  } = useAddress(coordinates ?? null);
   const { isLoading: ipLoading, error: ipError } = useIP();
   const {
     isLoading: userLoading,
@@ -64,7 +70,12 @@ export default function Home() {
   const [inboxOpen, setInboxOpen] = useState(false);
   // 计算总的加载状态
   const isLoading =
-    loading || emailLoading || addressLoading || ipLoading || userLoading;
+    loading ||
+    emailLoading ||
+    addressLoading ||
+    ipLoading ||
+    userLoading ||
+    coordinatesLoading;
 
   const hasAddedInitialHistory = useRef(false);
 
