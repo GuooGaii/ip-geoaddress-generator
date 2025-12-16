@@ -33,7 +33,7 @@ https://ip-geoaddress-generator.pages.dev/
 - 在Google地图上显示生成的地址
 - 一键复制各项信息
 - 保存、搜索和删除地址
-- 导出保存的地址为TXT文件
+- 导出保存的地址为JSON文件
 
 ### 用户体验
 - 响应式设计，适配多种设备
@@ -100,7 +100,3 @@ docker run -p 3000:3000 guoogaii/ip-geoaddress-generator:latest
 ## 许可证
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
-## 支持我
-
-<img src="支付宝收款码.png" alt="支付宝收款码" style="width: 50%; max-width: 300px;"/>

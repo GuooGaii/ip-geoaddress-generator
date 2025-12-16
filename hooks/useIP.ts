@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ipSignal } from "@/signals/ipSignal";
+import { detectedIpSignal, queryIpSignal } from "@/signals/ipSignal";
 import { ipService } from "@/services/ipService";
 import type { IPResponse } from "@/services/ipService";
 
@@ -9,7 +9,10 @@ export default function useIP() {
     queryFn: async () => {
       console.log("IP请求发起");
       const response = await ipService.fetchIP();
-      ipSignal.value = response.ip;
+      detectedIpSignal.value = response.ip;
+      if (!queryIpSignal.value) {
+        queryIpSignal.value = response.ip;
+      }
       return response;
     },
     refetchOnWindowFocus: false, // 在窗口重新聚焦时不要重新获取数据
