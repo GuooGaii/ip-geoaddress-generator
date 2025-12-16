@@ -100,7 +100,3 @@ docker run -p 3000:3000 guoogaii/ip-geoaddress-generator:latest
 ## 许可证
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
-## 支持我
-
-<img src="支付宝收款码.png" alt="支付宝收款码" style="width: 50%; max-width: 300px;"/>
