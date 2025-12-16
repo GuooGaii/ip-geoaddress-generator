@@ -33,7 +33,7 @@ https://ip-geoaddress-generator.pages.dev/
 - 在Google地图上显示生成的地址
 - 一键复制各项信息
 - 保存、搜索和删除地址
-- 导出保存的地址为TXT文件
+- 导出保存的地址为JSON文件
 
 ### 用户体验
 - 响应式设计，适配多种设备
