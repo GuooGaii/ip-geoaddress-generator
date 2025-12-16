@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import useIP from "@/hooks/useIP";
 import useUser from "@/hooks/useUser";
@@ -23,30 +23,41 @@ import { effect } from "@preact/signals-react";
 import { addressService } from "@/services/addressService";
 
 import { userSignal } from "@/signals/userSignal";
-import { ipSignal } from "@/signals/ipSignal";
+import { detectedIpSignal, queryIpSignal } from "@/signals/ipSignal";
 import { addressSignal, coordinatesSignal } from "@/signals/addressSignal";
 
 export default function Home() {
+  const queryIp = queryIpSignal.value;
   const {
     isLoading: coordinatesLoading,
     // error: coordinatesError,
     data: coordinates,
-  } = useCoordinates(ipSignal.value);
+  } = useCoordinates(queryIp);
+  const coordinatesForAddress =
+    coordinatesLoading || !coordinates ? null : coordinates;
   const {
     isLoading: addressLoading,
     error: addressError,
     refetch: fetchAddress,
-  } = useAddress(coordinates ?? null);
+    data: addressData,
+    dataUpdatedAt: addressUpdatedAt,
+  } = useAddress(coordinatesForAddress);
   const { isLoading: ipLoading, error: ipError } = useIP();
   const {
     isLoading: userLoading,
     error: userError,
     refetch: fetchUser,
+    data: userData,
+    dataUpdatedAt: userUpdatedAt,
   } = useUser("US");
   const [inputIp, setInputIp] = useState<string>("");
   const [inputMode, setInputMode] = useState<string>("ip");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [pendingIpGeneration, setPendingIpGeneration] = useState<{
+    ip: string;
+    requestedAt: number;
+  } | null>(null);
   const {
     history,
     selectedHistory,
@@ -85,21 +96,49 @@ export default function Home() {
       !ipLoading &&
       !userLoading &&
       !addressLoading &&
-      ipSignal.value &&
+      detectedIpSignal.value &&
       userSignal.value &&
       addressSignal.value
     ) {
       addHistoryRecord({
         user: userSignal.value,
         address: addressSignal.value,
-        ip: ipSignal.value,
+        ip: detectedIpSignal.value,
       });
       hasAddedInitialHistory.current = true;
     }
   });
 
+  useEffect(() => {
+    if (!pendingIpGeneration) return;
+    if (inputMode !== "ip") return;
+    if (coordinatesLoading || addressLoading || userLoading) return;
+    if (!addressData || !userData) return;
+    if (addressUpdatedAt < pendingIpGeneration.requestedAt) return;
+    if (userUpdatedAt < pendingIpGeneration.requestedAt) return;
+
+    addHistoryRecord({
+      user: userData,
+      address: addressData,
+      ip: pendingIpGeneration.ip,
+    });
+    setPendingIpGeneration(null);
+  }, [
+    pendingIpGeneration,
+    inputMode,
+    coordinatesLoading,
+    addressLoading,
+    userLoading,
+    addressData,
+    userData,
+    addressUpdatedAt,
+    userUpdatedAt,
+    addHistoryRecord,
+  ]);
+
   const handleGenerateAddress = async () => {
     setLoading(true);
+    setError("");
     try {
       if (inputMode === "address") {
         if (!inputIp) {
@@ -116,11 +155,11 @@ export default function Home() {
           coordinatesSignal.value = coordinates;
           await fetchUser();
           await fetchAddress();
-          if (userSignal.value && addressSignal.value && ipSignal.value) {
+          if (userSignal.value && addressSignal.value && detectedIpSignal.value) {
             addHistoryRecord({
               user: userSignal.value,
               address: addressSignal.value,
-              ip: ipSignal.value,
+              ip: detectedIpSignal.value,
             });
           }
         } catch (err) {
@@ -131,22 +170,20 @@ export default function Home() {
       }
 
       // IP 模式下的处理
-      const targetIp = inputIp || ipSignal.value;
-      if (targetIp) {
-        try {
-          await fetchAddress();
-          await fetchUser();
-          if (userSignal.value && addressSignal.value && ipSignal.value) {
-            addHistoryRecord({
-              user: userSignal.value,
-              address: addressSignal.value,
-              ip: ipSignal.value,
-            });
-          }
-        } catch (err) {
-          setError("获取地址失败");
-          console.error(err);
-        }
+      const targetIp = inputIp || detectedIpSignal.value;
+      if (!targetIp) {
+        setError("请输入IP");
+        return;
+      }
+
+      queryIpSignal.value = targetIp;
+      setPendingIpGeneration({ ip: targetIp, requestedAt: Date.now() });
+
+      try {
+        await fetchUser();
+      } catch (err) {
+        setError("获取用户信息失败");
+        console.error(err);
       }
     } finally {
       setLoading(false);
@@ -182,7 +219,11 @@ export default function Home() {
           paddingTop: "60px", // 为固定导航栏留出空间
         }}
       >
-        <Header ipLoading={ipLoading} ipError={ipError} ipSignal={ipSignal} />
+        <Header
+          ipLoading={ipLoading}
+          ipError={ipError}
+          detectedIp={detectedIpSignal.value}
+        />
 
         {userError && <Text color="red">获取用户信息失败</Text>}
 

@@ -12,7 +12,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { AddressSelector } from "./AddressSelector";
 import { HistoryList } from "./HistoryList";
 import { HistoryRecord } from "../types";
-import { ipSignal } from "@/signals/ipSignal";
+import { detectedIpSignal } from "@/signals/ipSignal";
 
 interface LeftCardProps {
   inputIp: string;
@@ -76,7 +76,7 @@ export const LeftCard = ({
             ) : (
               <TextField.Root
                 size="2"
-                placeholder={ipSignal.value}
+                placeholder={detectedIpSignal.value}
                 value={inputIp}
                 onChange={(e) => setInputIp(e.target.value)}
                 style={{ flex: 1 }}
