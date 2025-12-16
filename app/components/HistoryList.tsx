@@ -15,7 +15,7 @@ import {
   StarFilledIcon,
 } from "@radix-ui/react-icons";
 import type { HistoryRecord } from "../types";
-import WFDService from "../services/addressService";
+import { exportHistory, getExportFileName } from "@/services/historyExportService";
 
 interface HistoryListProps {
   history: HistoryRecord[];
@@ -45,12 +45,11 @@ export function HistoryList({
   };
 
   const handleExportJSON = () => {
-    const service = new WFDService();
-    const blob = service.exportHistory(history);
+    const blob = exportHistory(history);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = service.getExportFileName();
+    a.download = getExportFileName();
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
