@@ -10,7 +10,7 @@ export const Header = ({ ipLoading, ipError, detectedIp }: HeaderProps) => {
   return (
     <>
       <Heading size="8">真实地址生成器 🌍</Heading>
-      <Flex gap="2" align="center">
+      <Flex gap="2" align="center" data-nosnippet>
         <Text size="4" color="gray">
           您的当前 IP 地址为：
         </Text>
